@@ -10,9 +10,10 @@ import { hasRequests, lockedPageIds, cleanText, type Feedback } from "../shared/
 import { feedbackSchema } from "../shared/feedback-schema";
 import { drawCastSheet, drawPage, type ArtEnv } from "./prompts/sketch";
 import { allowedSpriteIds } from "./sprites";
+import { accessCookie, gateOn, hasAccess, passwordOk, takeAttempt, type AccessEnv } from "./access";
 import { booksLeft, limitMessage, newSession, readSession, reserveBook, sessionCookie, sessionLimit, type LimitEnv } from "./limits";
 
-export type Bindings = InterviewEnv & StoryEnv & ArtEnv & StorageEnv & LimitEnv & {
+export type Bindings = InterviewEnv & StoryEnv & ArtEnv & StorageEnv & LimitEnv & AccessEnv & {
   STUDIO_PASSWORD?: string; TURNSTILE_SECRET_KEY?: string; TURNSTILE_SITE_KEY?: string; TURNSTILE_VERIFY_URL?: string; TURNSTILE_ENABLED?: string;
   GEN_LIMITER?: { limit(o: { key: string }): Promise<{ success: boolean }> };
 };
@@ -34,8 +35,21 @@ app.use("/api/*", async (c, next) => {
 
 // Public. Never includes file contents, only hashes.
 app.get("/api/health", (c) =>
-  c.json({ commit: version.commit, builtAt: version.builtAt, hashes: { soul: version.soul, characters: version.characters, locations: version.locations } }),
+  c.json({ commit: version.commit, builtAt: version.builtAt, hashes: { soul: version.soul, characters: version.characters, locations: version.locations }, accessGate: gateOn(c.env) }),
 );
+
+// ---- the password gate for the book-making area ----
+app.get("/api/access", async (c) => c.json({ required: gateOn(c.env), granted: await hasAccess(c.env, c.req.header("cookie")) }));
+app.post("/api/access", async (c) => {
+  if (!gateOn(c.env)) return c.json({ ok: true, required: false });
+  if (!(await takeAttempt(c.env, ip(c)))) return c.json({ error: "That's a lot of guesses. Please wait a little while and try again." }, 429);
+  const body = (await c.req.json().catch(() => null)) as { password?: unknown } | null;
+  if (typeof body?.password !== "string" || !passwordOk(c.env, body.password)) return c.json({ error: "That's not the password." }, 401);
+  c.header("Set-Cookie", await accessCookie(c.env, new URL(c.req.url).protocol === "https:"));
+  return c.json({ ok: true, required: true });
+});
+const needAccess = async (c: { env: Bindings; req: { header(n: string): string | undefined }; json(b: unknown, s?: number): Response }) =>
+  (await hasAccess(c.env, c.req.header("cookie"))) ? null : c.json({ error: "The Delivery Man needs the password first.", code: "access_required" }, 401);
 /** The check is on unless TURNSTILE_ENABLED is exactly "false". The rate limit and the daily book budget apply either way. */
 const turnstileOn = (env: Bindings) => env.TURNSTILE_ENABLED !== "false";
 app.get("/api/config", async (c) =>
@@ -105,6 +119,7 @@ const friendly = (c: { json(b: unknown, s?: number): Response }, e: unknown) => 
 
 app.post("/api/interview", async (c) => {
   try {
+    const denied = await needAccess(c); if (denied) return denied;
     if (await limited(c)) return c.json({ error: "Not so fast, please. The Delivery Man needs a moment." }, 429);
     const body = (await c.req.json().catch(() => null)) as { blocks?: unknown } | null;
     const blocks = blocksSchema.safeParse(body?.blocks);
@@ -115,6 +130,7 @@ app.post("/api/interview", async (c) => {
 
 app.post("/api/books", async (c) => {
   try {
+    const denied = await needAccess(c); if (denied) return denied;
     if (await limited(c)) return c.json({ error: "Not so fast, please. The Delivery Man needs a moment." }, 429);
     const body = (await c.req.json().catch(() => null)) as { blocks?: unknown; answers?: unknown; turnstileToken?: string } | null;
     const blocks = blocksSchema.safeParse(body?.blocks);

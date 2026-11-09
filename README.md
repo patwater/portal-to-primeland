@@ -36,6 +36,12 @@ Verify binding syntax in `wrangler.jsonc` against current Cloudflare docs before
 - **"The doorman wasn't sure you were a grown-up."** Cloudflare rejected the Turnstile token. The usual cause is a site key and secret key from different widgets. Cloudflare's dummy site key (`1x00000000000000000000AA`, the widget that says "For testing only") only works with the dummy secret `1x0000000000000000000000000000000AA`; a real widget's site key needs that widget's real secret. The response carries Cloudflare's error code, and the Worker logs it (Workers Observability is on in `wrangler.jsonc`).
 - **"The Delivery Man dropped his clipboard."** The interview call failed. Check the Worker logs for a `"route":"error"` line: `ANTHROPIC_API_KEY is not set` or an `upstream status` number says why.
 
+## The studio password
+
+`STUDIO_PASSWORD` is one password for the book-making area: the blocks form, the Delivery Man's questions, the card game, and the server calls that write books. Visitors see a "studio door" until they enter it. A correct password gives a signed, HttpOnly cookie that lasts 7 days (it is keyed by the password, so changing the password signs everyone out), and wrong guesses are limited to ten per address per fifteen minutes. Reading a finished book by its share link, the citizens page and the sample edition stay public, and editing a book still needs its private edit link. The roster studio (`/studio/roster`) uses the same password with its own check.
+
+Set it with `npx wrangler secret put STUDIO_PASSWORD` or as a Secret in the Worker's Variables and Secrets. **If it isn't set the gate is open**: open `/api/health` and look for `"accessGate": true` to confirm it is on.
+
 ## Limits on new books
 
 Each anonymous browser session may make **two** new books (`SESSION_BOOK_LIMIT`). A session is a cookie (`portal_sid`, HttpOnly) that lasts `SESSION_TTL_HOURS` (24) from the first book; there are no accounts. A book that fails is not charged, and reading, drawing and revising existing books doesn't count. Because anyone can clear a cookie, each IP address is also held to `IP_DAILY_BOOK_LIMIT` (6) books a day, stored only as a hash. The global `DAILY_BOOK_BUDGET` and the per-minute rate limit still apply. The interview page tells visitors how many books they have left. To test beyond two books, raise `SESSION_BOOK_LIMIT` in `wrangler.jsonc` or clear the cookie.

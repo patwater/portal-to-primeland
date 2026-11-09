@@ -46,6 +46,7 @@ export function Interview() {
       rememberBook({ id: r.id, editToken: r.editToken, title: r.book.title, kidName: r.book.kidName, createdAt: new Date().toISOString() });
       navigate(`/b/${r.id}#edit=${r.editToken}`);
     } catch (e) {
+      if (e instanceof ApiError && e.code === "access_required") { window.location.reload(); return; } // the password cookie ran out: the gate will ask again
       setErr(e instanceof ApiError ? e.message : "The scissors got tangled. Shall we try that again?");
       setBusy(false); setToken(null); setResetKey((k) => k + 1);
       getConfig().then((c) => setLeft({ left: c.booksLeft, limit: c.bookLimit })).catch(() => undefined);
