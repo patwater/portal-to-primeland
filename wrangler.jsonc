@@ -15,7 +15,7 @@
     "MODEL_ART": "claude-sonnet-5-5",
     "MODEL_INTERVIEW": "claude-haiku-5-5",
     "DAILY_BOOK_BUDGET": "200",
-    "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
+    "TURNSTILE_SITE_KEY": "42",
     "BOOK_TTL_DAYS": "400"
   }
   // Secrets (never in this file): ANTHROPIC_API_KEY, TURNSTILE_SECRET_KEY, STUDIO_PASSWORD.
