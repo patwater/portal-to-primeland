@@ -4,7 +4,7 @@ A custom picture-book microsite: a parent fills in blocks about their kid, the S
 
 ## Status
 
-Milestone 1 (static shell and sample edition) is built: landing page, the blocks form, the page-turning reader with a hand-authored sample edition, the print stylesheet, and the content pipeline (`/api/health`). Milestones 2 to 6 follow the brief.
+Milestones 1 and 2 are built. M1: landing page, the blocks form, the page-turning reader with a hand-authored sample edition, the print stylesheet, and the content pipeline (`/api/health`). M2: roster and places parsers with badge checks (`npm run roster`), canon sprites and sketchbook extras extracted from `assets-src/` (`npm run sprites`), the map, citizen badge cards, the card-flipping game, and the `/studio/roster` review page. Roster sheets for characters without a canon sprite are drawn by `npm run draw-roster` (needs `ANTHROPIC_API_KEY`). Milestones 3 to 6 follow the brief.
 
 ## Run it
 

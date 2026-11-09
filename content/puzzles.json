@@ -1,0 +1,72 @@
+[
+  {
+    "id": "what-is-4", "name": "What is 4?",
+    "setup": "The traveler asks the question that stops the network, and Patch is too busy to answer.",
+    "truth": "4 = 2 + 2 = 2 × 2. The Adding Machine adds it up and the scissors snip it into two 2s, which are both prime.",
+    "places": ["the-data-lake", "the-scissor-gate"], "characters": ["the-adding-machine", "chris-and-steve", "patch-the-webmaster"],
+    "kidFriendlyResolutions": ["Two hands clap twice: two and two make four.", "Snip a four-block tower into two towers of two.", "Line up four buttons and count them in pairs."]
+  },
+  {
+    "id": "flickering-node", "name": "The flickering node",
+    "setup": "The blip in sector N2 is neither approved nor rejected.",
+    "truth": "Depends on the chosen candidate (SOUL.md Part VII). The in-between gets a place of its own.",
+    "places": ["terminus", "qubit-quay", "the-platypus-flats"], "characters": ["qubit", "wendell-the-window", "the-robo-seals"],
+    "kidFriendlyResolutions": ["The traveler simply looks, and the blip settles down.", "The companion's gadget notices the hang and gives it a nudge.", "A little platform gets built beside the tracks, with a sign that says Maybe."]
+  },
+  {
+    "id": "a-or-b", "name": "A or B?",
+    "setup": "Alpha and Beta hold up two of everything and ask the traveler to pick.",
+    "truth": "Sometimes the best answer is neither, and you ask for C.",
+    "places": ["protocol-plaza", "the-alphabet-bazaar"], "characters": ["alpha-and-beta"],
+    "kidFriendlyResolutions": ["The traveler points at something else and says C.", "The goats find a third snack nobody tested.", "Everyone tries both and then the new one."]
+  },
+  {
+    "id": "the-sieve", "name": "The Great Sieve",
+    "setup": "Eratosthenes needs help shaking out the multiples.",
+    "truth": "Shake out multiples of 2, then 3, then 5, and what remains is prime.",
+    "places": ["the-sifting-sands"], "characters": ["eratosthenes"],
+    "kidFriendlyResolutions": ["Shake the sieve and watch every second number fall through.", "Cover every third pebble with a shell.", "Whatever is left glittering goes up the path."]
+  },
+  {
+    "id": "one-more-tunnel", "name": "One more tunnel",
+    "setup": "The foreman says the mine is tapped out.",
+    "truth": "Multiply all the primes found so far and add one, and a new prime must exist (Euclid).",
+    "places": ["the-mines-of-many-primes"], "characters": ["patch-the-webmaster"],
+    "kidFriendlyResolutions": ["Stack all the buckets, add one more, and a new tunnel cracks open.", "Knock on the wall and hear a hollow place.", "The traveler asks: what if there is one more?"]
+  },
+  {
+    "id": "twin-cottages", "name": "Do the twins go on forever?",
+    "setup": "The old-timers on Lamplight Road argue every evening.",
+    "truth": "Nobody knows, which is the twin prime conjecture, and that is allowed.",
+    "places": ["lamplight-road"], "characters": ["fern-of-the-frontier"],
+    "kidFriendlyResolutions": ["Walk the road and wave at every pair of cottages.", "Agree to keep checking tomorrow.", "Leave a lamp on for the next pair."]
+  },
+  {
+    "id": "secret-word", "name": "The secret word",
+    "setup": "The traveler must prove she knows the word without saying it.",
+    "truth": "You can prove you know something without telling it (a zero-knowledge proof).",
+    "places": ["the-zero-knowledge-grotto"], "characters": ["zara-the-zebra", "the-owl"],
+    "kidFriendlyResolutions": ["Come out whichever tunnel the owl calls, every time.", "Whisper the word to the door, not the owl.", "The traveler's first word opens it."]
+  },
+  {
+    "id": "least-common-landing", "name": "Where do we meet?",
+    "setup": "Two climbers hop two steps and three steps at a time.",
+    "truth": "They first land together on step six, the least common multiple.",
+    "places": ["the-tower-of-two"], "characters": [],
+    "kidFriendlyResolutions": ["Hop and count out loud until both land at once.", "Chalk each landing and see where the marks meet.", "Lemonade on step six."]
+  },
+  {
+    "id": "connect-the-dots", "name": "Connect the dots",
+    "setup": "Dots from the mines must be joined in order.",
+    "truth": "Counting and patterns, with primes lighting up.",
+    "places": ["the-mines-of-many-primes", "the-data-lake"], "characters": ["patch-the-webmaster"],
+    "kidFriendlyResolutions": ["Join the dots and watch a picture appear.", "Count the dots and light up the special ones.", "String them across Patch's web."]
+  },
+  {
+    "id": "rules-in-chalk", "name": "The rule about rules",
+    "setup": "The scissors insist a rule can never change.",
+    "truth": "Rules can change, by the rule for changing rules.",
+    "places": ["protocol-plaza"], "characters": ["chris-and-steve"],
+    "kidFriendlyResolutions": ["Find the rule at the very top of the chalkboard.", "Propose a tiny change and watch it work.", "Draw hopscotch in the margin."]
+  }
+]

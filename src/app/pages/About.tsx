@@ -19,7 +19,7 @@ export function About() {
           few favorite things.
         </p>
         <p>
-          <Link to="/blocks">Pick your blocks</Link> · <Link to="/b/sample">Read the sample edition</Link>
+          <Link to="/blocks">Pick your blocks</Link> · <Link to="/b/sample">Read the sample edition</Link> · <Link to="/citizens">Citizens of Primeland</Link>
         </p>
         <p className="soft">
           Words and world © Patrick Atwater, shared under CC BY-NC-SA 4.0 (see the LICENSE file in the repository).

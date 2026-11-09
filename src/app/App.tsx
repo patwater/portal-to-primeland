@@ -3,6 +3,9 @@ import { Landing } from "./pages/Landing";
 import { Blocks } from "./pages/Blocks";
 import { Reader } from "./pages/Reader";
 import { About } from "./pages/About";
+import { Cards } from "./pages/Cards";
+import { Citizens } from "./pages/Citizens";
+import { Studio } from "./pages/Studio";
 import { sampleBook } from "./lib/sample";
 
 export function App() {
@@ -17,6 +20,7 @@ export function App() {
           <nav aria-label="Main">
             <Link to="/blocks">Pick your blocks</Link>
             <Link to="/b/sample">Sample edition</Link>
+            <Link to="/citizens">Citizens</Link>
             <Link to="/about">About</Link>
           </nav>
         </header>
@@ -25,8 +29,11 @@ export function App() {
         {path === "/" && <Landing />}
         {path === "/blocks" && <Blocks />}
         {path === "/about" && <About />}
+        {path === "/cards" && <Cards />}
+        {path === "/citizens" && <Citizens />}
+        {path === "/studio/roster" && <Studio />}
         {path.startsWith("/b/") && <Reader book={sampleBook} />}
-        {!["/", "/blocks", "/about"].includes(path) && !isReader && <Landing />}
+        {!["/", "/blocks", "/about", "/cards", "/citizens", "/studio/roster"].includes(path) && !isReader && <Landing />}
       </main>
     </>
   );

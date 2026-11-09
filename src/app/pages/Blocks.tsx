@@ -1,7 +1,10 @@
 import { useState, type ReactNode } from "react";
 import { RoughBox, RoughButton, RoughCheck, Squiggle } from "../components/Rough";
 import { Link } from "../lib/router";
-import { defaultBlocks, clean, keeperOptions, n2Options, placeOptions, puzzleOptions, type Blocks as B } from "../lib/blocks";
+import { defaultBlocks, clean, n2Options, puzzleOptions, type Blocks as B } from "../lib/blocks";
+import { citizens, keepers, numberedPlaces, placeName, roster } from "../lib/world";
+import { PrimelandMap } from "../components/PrimelandMap";
+import { BadgeCard } from "../components/BadgeCard";
 import { load, save } from "../lib/storage";
 
 function Page({ title, hint, children, open = false, seed }: { title: string; hint?: string; children: ReactNode; open?: boolean; seed: string }) {
@@ -71,7 +74,19 @@ export function Blocks() {
   const kid = b.name.trim() || "your kid";
   const missing = !b.name.trim();
   const cap = (k: "loves", i: number, v: string) => set(k, b.loves.map((x, j) => (j === i ? clean(v) : x)) as B["loves"]);
-  const togglePlace = (ids: string[]) => set("places", ids.slice(-4));
+  const [justAdded, setJustAdded] = useState<string[]>([]);
+  const togglePlace = (id: string) => {
+    if (b.places.includes(id)) return set("places", b.places.filter((p) => p !== id));
+    const next = [...b.places, id].slice(-4);
+    set("places", next);
+    // Preselect the new place's citizens so the family can see who lives there.
+    const residents = (numberedPlaces.find((p) => p.id === id)?.residents ?? []).filter((r) => citizens.some((c) => c.id === r) && !b.citizens.includes(r));
+    if (residents.length) {
+      set("citizens", [...b.citizens, ...residents]);
+      setJustAdded(residents.map((r) => roster.find((x) => x.id === r)?.name ?? r));
+    } else setJustAdded([]);
+  };
+  const toggleCitizen = (id: string, on: boolean) => set("citizens", on ? [...b.citizens, id] : b.citizens.filter((c) => c !== id));
 
   return (
     <section className="paper paper--dots page-pad">
@@ -137,19 +152,28 @@ export function Blocks() {
         </Page>
 
         <Page seed="pgD" title="D. Places to visit" hint="pick two to four">
-          <p className="soft">The bubble-wrap landing and the Scissor Gate are always included. A hand-drawn map arrives in the next milestone.</p>
-          <div className="gridpaper paper paper--grid map-stub">
-            <Multi name="places" values={b.places} onChange={togglePlace} options={placeOptions} />
+          <p className="soft">The bubble-wrap landing and the Scissor Gate are always included. Tap a place on the map.</p>
+          <div className="map-wrap paper paper--grid">
+            <PrimelandMap selected={b.places} onToggle={togglePlace} />
           </div>
-          {b.places.length > 0 && b.places.length < 2 && <p className="margin-note">One more, please, if you like (two to four).</p>}
+          <div className="place-list">
+            <Multi name="places" values={b.places} onChange={(v) => { const added = v.find((x) => !b.places.includes(x)); const removed = b.places.find((x) => !v.includes(x)); togglePlace((added ?? removed)!); }} options={numberedPlaces.map((p) => ({ id: p.id, name: `${p.number}. ${p.name}` }))} />
+          </div>
+          <p className="margin-note">{b.places.length ? `Chosen: ${b.places.map(placeName).join(", ")}.` : "Nothing chosen yet. The story will choose for you."}</p>
+          {b.places.length === 1 && <p className="margin-note">One more, please, if you like (two to four).</p>}
         </Page>
 
         <Page seed="pgE" title="E. Who to meet">
           <p className="field__label">Keepers (one to three)</p>
-          <Multi name="keepers" values={b.keepers} onChange={(v) => set("keepers", v.slice(-3))} options={keeperOptions.map((k) => ({ id: k.id, name: `${k.name}: “${k.says}”` }))} />
-          <RoughCheck seed="surprise" checked={b.surprise} onChange={(v) => set("surprise", v)} label="Surprise me with citizens to fill the background" />
+          <Multi name="keepers" values={b.keepers} onChange={(v) => set("keepers", v.slice(-3))} options={keepers.map((k) => ({ id: k.id, name: `${k.name}: ${k.says}` }))} />
+          <p className="field__label">Citizens ({b.citizens.length} picked)</p>
+          {justAdded.length > 0 && <p className="margin-note" role="status">Added from the places you picked: {justAdded.join(", ")}.</p>}
+          <div className="card-grid">
+            {citizens.map((c) => <BadgeCard key={c.id} entry={c} selected={b.citizens.includes(c.id)} onToggle={(on) => toggleCitizen(c.id, on)} />)}
+          </div>
+          <RoughCheck seed="surprise" checked={b.surprise} onChange={(v) => set("surprise", v)} label="Surprise me with extra citizens in the background" />
           {b.surprise && <Choice name="density" value={b.density} onChange={(v) => set("density", v)} options={[{ id: "few", name: "a few" }, { id: "some", name: "some" }, { id: "lots", name: "lots" }]} />}
-          <p className="margin-note">The 31 citizen badge cards, with their sketches, arrive in the next milestone.</p>
+          <p><Link to="/cards">Read the cards together</Link>, and let your kid choose who to meet.</p>
         </Page>
 
         <Page seed="pgF" title="F. The puzzle at the heart of the story">

@@ -23,7 +23,7 @@ const O = (t: At, cx: number, cy: number, rx: number, ry: number, weight?: Weigh
 };
 const dot = (t: At, cx: number, cy: number, s: number): El => O(t, cx, cy, 2.2, 2.2, 3, undefined, s);
 
-export const ground = (y: number, x1 = 20, x2 = 780): El => ({ type: "path", d: `M ${x1} ${y} Q 200 ${y - 14} 400 ${y} T ${x2} ${y - 4}`, weight: 2 });
+export const ground = (y: number, x1 = 20, x2 = 780): El => ({ type: "path", d: `M ${x1} ${y} Q 200 ${y - 14} 400 ${y} Q 600 ${y + 14} ${x2} ${y - 4}`, weight: 2 });
 
 export function kid(x: number, y: number, s = 1, flip = false, excited = true): El[] {
   const t = at(x, y, s, flip);
@@ -144,9 +144,9 @@ export function sealRobo(x: number, y: number, s = 1, flip = false): El[] {
 
 export function lake(y: number): El[] {
   return [
-    { type: "path", d: `M 40 ${y} Q 140 ${y - 12} 240 ${y} T 440 ${y} T 640 ${y} T 770 ${y}`, weight: 1 },
-    { type: "path", d: `M 90 ${y + 28} Q 180 ${y + 18} 270 ${y + 28} T 450 ${y + 28} T 620 ${y + 28}`, weight: 1 },
-    { type: "path", d: `M 170 ${y + 56} Q 240 ${y + 48} 310 ${y + 56} T 450 ${y + 56}`, weight: 1 },
+    { type: "path", d: `M 40 ${y} Q 140 ${y - 12} 240 ${y} Q 340 ${y + 12} 440 ${y} Q 540 ${y - 12} 640 ${y} Q 700 ${y + 8} 770 ${y}`, weight: 1 },
+    { type: "path", d: `M 90 ${y + 28} Q 180 ${y + 18} 270 ${y + 28} Q 360 ${y + 38} 450 ${y + 28} Q 535 ${y + 18} 620 ${y + 28}`, weight: 1 },
+    { type: "path", d: `M 170 ${y + 56} Q 240 ${y + 48} 310 ${y + 56} Q 380 ${y + 64} 450 ${y + 56}`, weight: 1 },
   ];
 }
 

@@ -6,16 +6,19 @@
   "scripts": {
     "dev": "vite",
     "roster": "tsx scripts/build-roster.ts",
-    "prebuild": "tsx scripts/content-version.ts",
+    "prebuild": "tsx scripts/build-roster.ts && tsx scripts/content-version.ts",
     "build": "tsc --noEmit && vitest run && vite build",
     "test": "vitest run",
-    "deploy": "npm run build && wrangler deploy"
+    "deploy": "npm run build && wrangler deploy",
+    "sprites": "python3 scripts/extract-sprites.py",
+    "draw-roster": "tsx scripts/draw-roster.ts"
   },
   "dependencies": {
     "hono": "^4.13.17",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
-    "roughjs": "^4.6.6"
+    "roughjs": "^4.6.6",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.68.0",
