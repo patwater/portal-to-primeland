@@ -22,7 +22,7 @@ The portal opens for any kid who finds the box, so the traveler is a role rather
 
 **Badge:** none. **Look:** a tiny tot in a dotted outfit and Crocs, always mid-run.
 
-Taylor is the lil' mailer, the girl her dad always said they'd put in a package and mail somewhere. She runs up the hill with the verve and vigor of a tall ship sailor, and she has no time for why, where, or to what end. She sees a box where Brock saw packaging, and that difference is her whole superpower. In Primeland she is the only one who does not already have a number, so she is the only one who can say "Gray!" and mean it.
+Taylor is the little wailer, the girl her dad always said he would put in a package and mail somewhere, and then went ahead and mailed. She runs up the hill with the verve and vigor of a tall ship sailor, and she has no time for why, where, or to what end. She sees a box where Brock saw packaging, and that difference is her whole superpower. In Primeland she is the only one who does not already have a number, so she is the only one who can say "Gray!" and mean it.
 
 **Says:** "Box!"
 
@@ -72,9 +72,11 @@ Their favorite game is the A or B test. They hold up two of anything, two hats, 
 
 Chris and Steve are cousins and the gatekeepers of Primeland. Steve cuts corners and Chris cuts slack, and the scissors promise you'll need both. They keep the Scissor Gate, just past the bubble-wrap landing. Their job is to cut every number down until it cannot be divided any further, because only then is it allowed into Primeland. They take the rules very seriously, or at least one of them does.
 
+The grown-up joke is the question nobody asks: who cuts the cutters? A pair of scissors is two, and two is prime, so there is nothing to cut them down into. They are indivisible, and they are quietly proud of it. But each blade by itself is a one, the Adding Machine's badge, so the cousins are made of exactly what the Adding Machine counts. They have never said so out loud.
+
 **Says:** "What's your count?"
 
-**Story hook:** In the first draft, Taylor pokes them in the center spot, says "Gray!", and runs off. Every traveler answers "What's your count?" in their own way. They are still shouting about proper protocols when she disappears down the path.
+**Story hook:** In the first draft, Taylor pokes them in the center spot, says "Gray!", and runs off. Every traveler answers "What's your count?" in their own way. They are still shouting about proper protocols when she disappears down the path. A traveler who asks the scissors "How do you get cut?" gets a long, fussy, flustered answer ending in "We are a pair. A pair is two. Two is prime. Nobody cuts us," and a very small silence where one blade looks at the other.
 
 ### Patch the Webmaster
 

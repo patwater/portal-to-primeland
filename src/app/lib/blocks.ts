@@ -1,5 +1,5 @@
 export type Blocks = {
-  name: string; nickname: string; pronouns: "she" | "he" | "they"; age: number; look: string; shout: string; count: string;
+  name: string; nickname: string; age: number; look: string; shout: string; count: string;
   loves: [string, string, string]; giggle: string;
   companion: "scout" | "cat" | "robot" | "real" | "none"; petName: string; petKind: string; petDetail: string;
   arrival: "hill" | "porch" | "grandma" | "park" | "custom"; arrivalCustom: string; brock: boolean; thingamajig: string;
@@ -11,7 +11,7 @@ export type Blocks = {
 };
 
 export const defaultBlocks: Blocks = {
-  name: "", nickname: "", pronouns: "she", age: 4, look: "", shout: "", count: "",
+  name: "", nickname: "", age: 4, look: "", shout: "", count: "",
   loves: ["", "", ""], giggle: "",
   companion: "scout", petName: "", petKind: "", petDetail: "",
   arrival: "hill", arrivalCustom: "", brock: true, thingamajig: "the thingamajig",
@@ -34,5 +34,5 @@ export const n2Options = [
   { id: "qubit", name: "Qubit", teaser: "A spinning top that is yes and no, until somebody looks." },
   { id: "platypuses", name: "The platypuses", teaser: "Duck bills and beaver tails that fit no box at all." },
   { id: "one", name: "The number 1", teaser: "Not prime, not the other thing, and standing outside the gate." },
-  { id: "traveler", name: "The traveler herself", teaser: "The one with no number, who answered “Gray!”" },
+  { id: "traveler", name: "The traveler", teaser: "The one with no number, who answered the scissors with a count all their own." },
 ];

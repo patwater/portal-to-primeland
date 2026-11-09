@@ -31,6 +31,11 @@ STUDIO_PASSWORD=choose-something
 
 Verify binding syntax in `wrangler.jsonc` against current Cloudflare docs before the first deploy.
 
+## Troubleshooting
+
+- **"The doorman wasn't sure you were a grown-up."** Cloudflare rejected the Turnstile token. The usual cause is a site key and secret key from different widgets. Cloudflare's dummy site key (`1x00000000000000000000AA`, the widget that says "For testing only") only works with the dummy secret `1x0000000000000000000000000000000AA`; a real widget's site key needs that widget's real secret. The response carries Cloudflare's error code, and the Worker logs it (Workers Observability is on in `wrangler.jsonc`).
+- **"The Delivery Man dropped his clipboard."** The interview call failed. Check the Worker logs for a `"route":"error"` line: `ANTHROPIC_API_KEY is not set` or an `upstream status` number says why.
+
 ## How to change Primeland
 
 - **Add or edit a character.** Edit `content/characters.md` (new citizens take the next unused prime), run `npm run roster`, run `npm run draw-roster -- --only <id>` for the new sheet, approve it at `/studio/roster`, and redeploy.

@@ -12,7 +12,7 @@ const N2: Record<string, string> = {
   qubit: "Qubit, the spinning top who is yes and no until someone looks.",
   platypuses: "The platypuses, who fit no box and cannot be stamped.",
   one: "The number 1, neither prime nor composite.",
-  traveler: "The traveler herself, the one with no number who answered the scissors with her own count.",
+  traveler: "The traveler, the one with no number who answered the scissors with a count all their own.",
 };
 const COMPANION: Record<string, string> = {
   scout: "Scout the Watchdog, a nervous dog tangled in a smartwatch that translates his barks.",
@@ -26,7 +26,6 @@ const ARRIVAL: Record<string, string> = {
 const ENDING: Record<string, string> = {
   dinner: "home in time for dinner", souvenir: "back through the box with a souvenir", cliffhanger: "a cliffhanger that sets up the next chapter",
 };
-const PRONOUN: Record<string, string> = { she: "she/her", he: "he/him", they: "they/them" };
 
 export const puzzleFor = (id: string): Puzzle => (puzzles as Puzzle[]).find((p) => p.id === id) ?? (puzzles as Puzzle[])[0];
 const nameOf = (id: string) => roster.find((r) => r.id === id)?.name ?? id;
@@ -39,7 +38,7 @@ export function familyInput(b: FamilyBlocks): string {
     : COMPANION[b.companion];
   const arrival = b.arrival === "custom" ? b.arrivalCustom || "somewhere of the family's choosing" : ARRIVAL[b.arrival];
   const lines = [
-    line("Traveler's name", b.name), line("Nickname used in dialogue", b.nickname), `Pronouns: ${PRONOUN[b.pronouns]}`, `Age: ${b.age}`,
+    line("Traveler's name", b.name), line("Nickname used in dialogue", b.nickname), `Age: ${b.age}`,
     line("Looks like", b.look), line("Shouts when excited", b.shout), line("Answer to \"What's your count?\"", b.count),
     line("Loves right now", b.loves.filter(Boolean).join("; ")), line("Giggles at", b.giggle),
     `Companion: ${companion}`, `The box shows up at: ${arrival}`,
@@ -67,7 +66,7 @@ export function storytellerUser(b: FamilyBlocks, a: Answers): string {
   return [
     `<puzzle>\nName: ${p.name}\nSetup: ${p.setup}\nTruth: ${p.truth}\nKid-friendly resolutions: ${p.kidFriendlyResolutions.join(" / ")}\n</puzzle>`,
     familyInput(b), answersInput(a),
-    `<shape>\nPages: exactly ${b.length}, numbered 1 to ${b.length}. Words per page: ${ideal} (never fewer than ${min} or more than ${max}).\n</shape>`,
+    `<shape>\nPronouns: none given, so refer to the traveler by name, nickname, or "the tot" and write around he and she.\nPages: exactly ${b.length}, numbered 1 to ${b.length}. Words per page: ${ideal} (never fewer than ${min} or more than ${max}).\n</shape>`,
   ].filter(Boolean).join("\n\n");
 }
 

@@ -164,7 +164,6 @@ Every block has a default so the form can be submitted with only a name. Group t
 ### A. Your kid (the hero)
 - **Name** as it should appear in the book (required). Use the placeholder "Your kid's name…". Do not prefill a real name.
 - **What they call themselves**, an optional nickname used in dialogue ("baby T", "Tay-Tay").
-- **Pronouns**: she, he, they.
 - **Age**: a slider from 2 to 8. Age drives page length, vocabulary, and how much math is shown on the page.
 - **What they look like in the book**: hair, a signature outfit or item. Show the example "polka-dot jumpsuit and Crocs".
 - **What they shout when excited**, for example "Box!".
@@ -192,7 +191,7 @@ Multi-select, two to four places, shown as a hand-drawn map of Primeland on squa
 Single select from `content/puzzles.json` (section 5.3).
 
 ### F2. Who is the blip in N2?
-An optional choice, defaulting to "Let the story decide." The options are the four candidates in Part VII of SOUL.md (Qubit, the platypuses, the number 1, or the traveler herself), each with a one-line teaser that doesn't spoil the ending.
+An optional choice, defaulting to "Let the story decide." The options are the four candidates in Part VII of SOUL.md (Qubit, the platypuses, the number 1, or the traveler), each with a one-line teaser that doesn't spoil the ending.
 
 ### G. Tone and shape
 - **Mood**: calm bedtime, giggly, or big adventure.
