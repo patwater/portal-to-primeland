@@ -1,0 +1,40 @@
+{
+  "name": "portal-to-primeland",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "roster": "tsx scripts/build-roster.ts",
+    "prebuild": "tsx scripts/build-roster.ts && tsx scripts/content-version.ts",
+    "build": "tsc --noEmit && vitest run && vite build && tsx scripts/check-bundle.ts",
+    "test": "vitest run",
+    "deploy": "npm run build && wrangler deploy",
+    "sprites": "python3 scripts/extract-sprites.py",
+    "draw-roster": "tsx scripts/draw-roster.ts",
+    "test:live": "vitest run tests/live.test.ts"
+  },
+  "dependencies": {
+    "hono": "^4.13.17",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "roughjs": "^4.6.6",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.68.0",
+    "@cloudflare/workers-types": "^5.20261109.1",
+    "@fontsource/caveat": "^5.3.0",
+    "@fontsource/gochi-hand": "^5.3.0",
+    "@fontsource/patrick-hand": "^5.3.0",
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.3.0",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.7",
+    "vitest": "^5.1.0",
+    "wrangler": "^4.159.0"
+  }
+}

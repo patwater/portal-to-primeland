@@ -1,0 +1,215 @@
+{
+  "sprites": [
+    {
+      "id": "cube",
+      "file": "cube.png",
+      "width": 595,
+      "height": 595,
+      "anchor": {
+        "x": 297,
+        "y": 595
+      },
+      "facing": "right",
+      "source": "tails_trip p2, the cube beside Brock"
+    },
+    {
+      "id": "brock",
+      "file": "brock.png",
+      "width": 379,
+      "height": 720,
+      "anchor": {
+        "x": 189,
+        "y": 720
+      },
+      "facing": "right",
+      "source": "tails_trip p2 (drawn facing front)"
+    },
+    {
+      "id": "tot-polka-dot",
+      "file": "tot-polka-dot.png",
+      "width": 675,
+      "height": 720,
+      "anchor": {
+        "x": 337,
+        "y": 720
+      },
+      "facing": "right",
+      "source": "tails_trip p4 (Patrick's own Taylor edition only)"
+    },
+    {
+      "id": "scissors-chris-steve",
+      "file": "scissors-chris-steve.png",
+      "width": 720,
+      "height": 606,
+      "anchor": {
+        "x": 360,
+        "y": 606
+      },
+      "facing": "right",
+      "source": "tails_trip p5"
+    },
+    {
+      "id": "robo-seal",
+      "file": "robo-seal.png",
+      "width": 408,
+      "height": 224,
+      "anchor": {
+        "x": 204,
+        "y": 224
+      },
+      "facing": "right",
+      "source": "tails_trip p8 (labels left to the Sketch Artist)"
+    },
+    {
+      "id": "scout",
+      "file": "scout.png",
+      "width": 363,
+      "height": 143,
+      "anchor": {
+        "x": 181,
+        "y": 143
+      },
+      "facing": "left",
+      "source": "tails_trip p8 (smartwatch is an overlay drawn by the Sketch Artist)"
+    },
+    {
+      "id": "data-lake",
+      "file": "data-lake.png",
+      "width": 720,
+      "height": 492,
+      "anchor": {
+        "x": 360,
+        "y": 492
+      },
+      "facing": "right",
+      "source": "tails_trip p7 (lake and rising structure; margin notes erased)"
+    },
+    {
+      "id": "tower-of-two",
+      "file": "tower-of-two.png",
+      "width": 503,
+      "height": 655,
+      "anchor": {
+        "x": 251,
+        "y": 655
+      },
+      "facing": "right",
+      "source": "prime_pics p1"
+    },
+    {
+      "id": "dig-in-the-dots",
+      "file": "dig-in-the-dots.png",
+      "width": 482,
+      "height": 266,
+      "anchor": {
+        "x": 241,
+        "y": 266
+      },
+      "facing": "right",
+      "source": "prime_pics p1"
+    },
+    {
+      "id": "sieve-grid",
+      "file": "sieve-grid.png",
+      "width": 451,
+      "height": 453,
+      "anchor": {
+        "x": 225,
+        "y": 453
+      },
+      "facing": "right",
+      "source": "primeland_notes p4"
+    },
+    {
+      "id": "portal-box-open",
+      "file": "portal-box-open.png",
+      "width": 549,
+      "height": 439,
+      "anchor": {
+        "x": 274,
+        "y": 439
+      },
+      "facing": "right",
+      "source": "primeland_notes p1"
+    }
+  ],
+  "extras": [
+    {
+      "id": "robot-at-the-smog-check",
+      "file": "extras/robot-at-the-smog-check.png",
+      "width": 383,
+      "height": 720,
+      "source": "sketchbook p21"
+    },
+    {
+      "id": "big-boss-bottle-nose-dolphin",
+      "file": "extras/big-boss-bottle-nose-dolphin.png",
+      "width": 345,
+      "height": 720,
+      "source": "sketchbook p30"
+    },
+    {
+      "id": "kinetic-coyote",
+      "file": "extras/kinetic-coyote.png",
+      "width": 311,
+      "height": 720,
+      "source": "sketchbook p3 (drawn sideways on the page)"
+    },
+    {
+      "id": "sperm-whale",
+      "file": "extras/sperm-whale.png",
+      "width": 230,
+      "height": 720,
+      "source": "sketchbook p4"
+    },
+    {
+      "id": "howling-wolf",
+      "file": "extras/howling-wolf.png",
+      "width": 536,
+      "height": 720,
+      "source": "sketchbook p6"
+    },
+    {
+      "id": "bird-falcon",
+      "file": "extras/bird-falcon.png",
+      "width": 720,
+      "height": 631,
+      "source": "sketchbook p13"
+    },
+    {
+      "id": "maka",
+      "file": "extras/maka.png",
+      "width": 720,
+      "height": 665,
+      "source": "sketchbook p18 (a clock inside the body: never use for Scout)"
+    },
+    {
+      "id": "stag-p22",
+      "file": "extras/stag-p22.png",
+      "width": 602,
+      "height": 527,
+      "source": "sketchbook p22 (crop starts below the page's journal text)"
+    },
+    {
+      "id": "umbrella",
+      "file": "extras/umbrella.png",
+      "width": 627,
+      "height": 720,
+      "source": "sketchbook p29"
+    },
+    {
+      "id": "pickle-jar",
+      "file": "extras/pickle-jar.png",
+      "width": 384,
+      "height": 720,
+      "source": "sketchbook p29"
+    },
+    {
+      "id": "stag-p33",
+      "file": "extras/stag-p33.png",
+      "width": 699,
+      "height": 697,
+      "source": "sketchbook p33"
+    }
+  ]
+}
