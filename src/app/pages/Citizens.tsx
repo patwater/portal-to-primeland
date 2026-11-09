@@ -14,7 +14,7 @@ export function Citizens() {
         <p><Link to="/cards">Read the cards together</Link> · <Link to="/blocks">Pick your blocks</Link></p>
       </div>
       <div className="card-grid card-grid--page">
-        {citizens.map((c) => <BadgeCard key={c.id} entry={c} />)}
+        {citizens.map((c) => <BadgeCard key={c.id} entry={c} level={2} />)}
       </div>
       <div className="prose prose--wide">
         <h2 className="display display--xs">Folk without badges</h2>

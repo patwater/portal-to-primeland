@@ -34,7 +34,7 @@ export function Cards() {
         <Link to="/blocks">← Back to the blocks</Link>
         <span className="margin-note" aria-live="polite">{i + 1} of {citizens.length} · {picked.length} picked</span>
       </div>
-      <button className={`flip ${flipped ? "is-flipped" : ""}`} onClick={() => setFlipped((f) => !f)} aria-label={flipped ? `${c.name}, tap to flip back` : "Tap to flip the card"}>
+      <button className={`flip ${flipped ? "is-flipped" : ""}`} onClick={() => setFlipped((f) => !f)}>
         <span className="flip__face flip__front">
           <span className="display">{c.letter}</span>
           <span className="margin-note">who lives behind this letter? tap to flip</span>
@@ -48,9 +48,9 @@ export function Cards() {
         </span>
       </button>
       <div className="cards__nav">
-        <RoughButton seed="cprev" onClick={() => go(-1)} aria-label="Previous card">← Back</RoughButton>
+        <RoughButton seed="cprev" onClick={() => go(-1)}>← Back</RoughButton>
         <RoughButton seed="cpick" onClick={toggle} aria-pressed={on}>{on ? "✓ We’ll meet them" : "Let’s meet them!"}</RoughButton>
-        <RoughButton seed="cnext" onClick={() => go(1)} aria-label="Next card">Next →</RoughButton>
+        <RoughButton seed="cnext" onClick={() => go(1)}>Next →</RoughButton>
       </div>
     </section>
   );

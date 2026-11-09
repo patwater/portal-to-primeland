@@ -35,6 +35,15 @@ export function Reader({ book, progress, onRetry, editor, startAtNext }: { book:
   const [i, setI] = useState(0);
   const [dir, setDir] = useState<"fwd" | "back">("fwd");
   const touch = useRef<number | null>(null);
+  const [sheet, setSheet] = useState<"square" | "letter">("square");
+  // Square 8.5 x 8.5 in is the default sheet; letter landscape puts the picture beside the text.
+  useEffect(() => {
+    document.documentElement.dataset.print = sheet;
+    let el = document.getElementById("print-size") as HTMLStyleElement | null;
+    if (!el) { el = document.createElement("style"); el.id = "print-size"; document.head.appendChild(el); }
+    el.textContent = `@page { size: ${sheet === "letter" ? "11in 8.5in" : "8.5in 8.5in"}; margin: .4in; }`;
+    return () => { delete document.documentElement.dataset.print; };
+  }, [sheet]);
   const paper = book.paper === "lined" ? "lined" : book.paper === "dots" ? "dots" : "grid";
 
   const leaves: Leaf[] = [
@@ -155,6 +164,7 @@ export function Reader({ book, progress, onRetry, editor, startAtNext }: { book:
         <span className="margin-note" aria-live="polite">{cur.label} · {i + 1} of {leaves.length}</span>
         <span>
           {book.id !== "sample" && <CopyLinks id={book.id} />}
+          <label className="margin-note">Sheet <select value={sheet} onChange={(e) => setSheet(e.target.value as "square" | "letter")} aria-label="Print sheet size"><option value="square">8.5 in square</option><option value="letter">Letter landscape</option></select></label>{" "}
           <button className="linkish" onClick={() => window.print()}>Print or save as PDF</button>
         </span>
       </div>
@@ -183,13 +193,13 @@ export function Reader({ book, progress, onRetry, editor, startAtNext }: { book:
       </div>
 
       <nav className="reader__nav no-print" aria-label="Turn the page">
-        <RoughButton seed="prev" onClick={() => go(i - 1)} disabled={i === 0} aria-label="Previous page">← Back</RoughButton>
+        <RoughButton seed="prev" onClick={() => go(i - 1)} disabled={i === 0} >← Back</RoughButton>
         <ol className="dots" aria-hidden="true">
           {leaves.map((l, idx) => (
             <li key={l.key} className={idx === i ? "on" : ""} />
           ))}
         </ol>
-        <RoughButton seed="next" onClick={() => go(i + 1)} disabled={i === leaves.length - 1} aria-label="Next page">Turn the page →</RoughButton>
+        <RoughButton seed="next" onClick={() => go(i + 1)} disabled={i === leaves.length - 1} >Turn the page →</RoughButton>
       </nav>
       <RoughBox className="no-print reader__hint" seed="hint">
         <p className="margin-note">Arrow keys turn the page. On a phone, swipe.</p>

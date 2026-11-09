@@ -30,7 +30,8 @@ button { font: inherit; color: inherit; }
 
 /* paper */
 .paper { position: relative; background-color: var(--paper); }
-.paper::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .05; filter: url(#grain); background: #000; mix-blend-mode: multiply; }
+.paper::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .06; mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' seed='4'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
 .paper--dots { background-image: radial-gradient(var(--dot) 1.2px, transparent 1.4px); background-size: 20px 20px; background-position: 10px 10px; }
 .paper--lined {
   background-image: linear-gradient(90deg, transparent 54px, var(--margin-rule) 54px, var(--margin-rule) 56px, transparent 56px),
@@ -152,6 +153,11 @@ input[type="range"] { width: 100%; accent-color: var(--ink); min-height: 44px; }
   .spread__text { padding: 8px 8px 8px 60px; display: block; }
   .story { font-size: 17pt; line-height: 22px; }
   .leaf-single { box-shadow: none; min-height: 7in; border: 0; }
+  html[data-print="letter"] .spread { flex-direction: row !important; align-items: center; }
+  html[data-print="letter"] .spread__art { flex: 1.2; }
+  html[data-print="letter"] .spread__text { flex: 1; padding: 8px 8px 8px 56px; }
+  html[data-print="letter"] .leaf-single { min-height: 6.6in; }
+  .reader__bar select { min-height: 0; padding: 0 4px; border: 1px dashed var(--ink); }
   .paper--dots, .paper--lined, .paper--grid { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
 

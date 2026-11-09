@@ -1,13 +1,17 @@
+import { lazy, Suspense } from "react";
 import { Link, usePath } from "./lib/router";
 import { Landing } from "./pages/Landing";
-import { Blocks } from "./pages/Blocks";
-import { Reader } from "./pages/Reader";
-import { About } from "./pages/About";
-import { Cards } from "./pages/Cards";
-import { Citizens } from "./pages/Citizens";
-import { Studio } from "./pages/Studio";
-import { Interview } from "./pages/Interview";
-import { BookLoader } from "./pages/BookLoader";
+import { NotFound } from "./pages/NotFound";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+
+const named = <T extends string>(load: () => Promise<Record<T, React.ComponentType<any>>>, key: T) => lazy(() => load().then((m) => ({ default: m[key] })));
+const Blocks = named(() => import("./pages/Blocks"), "Blocks");
+const About = named(() => import("./pages/About"), "About");
+const Cards = named(() => import("./pages/Cards"), "Cards");
+const Citizens = named(() => import("./pages/Citizens"), "Citizens");
+const Studio = named(() => import("./pages/Studio"), "Studio");
+const Interview = named(() => import("./pages/Interview"), "Interview");
+const BookLoader = named(() => import("./pages/BookLoader"), "BookLoader");
 
 export function App() {
   const path = usePath();
@@ -27,6 +31,8 @@ export function App() {
         </header>
       )}
       <main id="main">
+        <ErrorBoundary>
+        <Suspense fallback={<p className="margin-note page-pad" role="status">Turning the page…</p>}>
         {path === "/" && <Landing />}
         {path === "/blocks" && <Blocks />}
         {path === "/about" && <About />}
@@ -35,7 +41,9 @@ export function App() {
         {path === "/studio/roster" && <Studio />}
         {path === "/interview" && <Interview />}
         {isReader && <BookLoader id={path.slice(3)} />}
-        {!["/", "/blocks", "/about", "/cards", "/citizens", "/studio/roster", "/interview"].includes(path) && !isReader && <Landing />}
+        {!["/", "/blocks", "/about", "/cards", "/citizens", "/studio/roster", "/interview"].includes(path) && !isReader && <NotFound />}
+        </Suspense>
+        </ErrorBoundary>
       </main>
     </>
   );

@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { hashSeed, renderDrawing, textSize, type Rendered } from "../lib/rough";
 import type { Drawing } from "../lib/types";
-import { useIndex, type SpriteInfo } from "../lib/world";
+import { useIndex, type SpriteInfo } from "../lib/sprites";
 
 /** Rendered size of a sprite: pixels of the transparent PNG times this, times the element's `scale`. */
 export const SPRITE_UNIT = 0.4;

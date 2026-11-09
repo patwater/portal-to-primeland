@@ -6,7 +6,8 @@ import { generateInterview, type InterviewEnv } from "./prompts/interviewer";
 import { generateStory, type StoryEnv } from "./prompts/storyteller";
 import { carryArt, castSheetIds, deleteBook, getBlocks, getBook, getBookRaw, getFeedback, getMeta, getVersionRaw, listVersions, randomId, randomToken, saveBlocks, saveBook, saveCastSheet, saveFeedback, savePageArt, sha256, takeArtAttempt, takeBudget, type StorageEnv } from "./storage";
 import { generateRevision } from "./prompts/reviser";
-import { feedbackSchema, hasRequests, lockedPageIds, cleanText, type Feedback } from "../shared/feedback";
+import { hasRequests, lockedPageIds, cleanText, type Feedback } from "../shared/feedback";
+import { feedbackSchema } from "../shared/feedback-schema";
 import { drawCastSheet, drawPage, type ArtEnv } from "./prompts/sketch";
 import { allowedSpriteIds } from "./sprites";
 
@@ -16,9 +17,18 @@ export type Bindings = InterviewEnv & StoryEnv & ArtEnv & StorageEnv & {
 };
 const app = new Hono<{ Bindings: Bindings }>();
 
+const MAX_BODY = 64 * 1024; // the biggest honest request is a form of short text fields
+
 app.use("/api/*", async (c, next) => {
-  c.header("Cache-Control", "no-store");
+  if (c.req.method === "POST" || c.req.method === "PUT") {
+    const declared = Number(c.req.header("content-length") ?? 0);
+    const tooBig = declared > MAX_BODY || (!declared && (await c.req.raw.clone().arrayBuffer()).byteLength > MAX_BODY);
+    if (tooBig) return c.json({ error: "That's more than the Delivery Man can carry. Please shorten it a little." }, 413);
+  }
   await next();
+  c.header("Cache-Control", "no-store");
+  c.header("X-Content-Type-Options", "nosniff");
+  c.header("Referrer-Policy", "no-referrer");
 });
 
 // Public. Never includes file contents, only hashes.

@@ -1,43 +1,55 @@
 # A Portal to Primeland
 
-A custom picture-book microsite: a parent fills in blocks about their kid, the Storyteller writes a short illustrated edition set in Primeland, and the family revises it after each bedtime reading. The full specification is in [`build-brief.md`](build-brief.md). The world lives in three files in [`content/`](content): `SOUL.md`, `characters.md`, and `locations.md`.
-
-## Status
-
-Milestones 1 and 2 are built. M1: landing page, the blocks form, the page-turning reader with a hand-authored sample edition, the print stylesheet, and the content pipeline (`/api/health`). M2: roster and places parsers with badge checks (`npm run roster`), canon sprites and sketchbook extras extracted from `assets-src/` (`npm run sprites`), the map, citizen badge cards, the card-flipping game, and the `/studio/roster` review page. Roster sheets for characters without a canon sprite are drawn by `npm run draw-roster` (needs `ANTHROPIC_API_KEY`). M3: Worker routes (`/api/interview`, `/api/books`, `/api/books/:id`), the prompt assembler with prompt caching, the Claude wrapper, output checks, Turnstile, rate limiting and a daily budget, plus the interview page, loading scene and generated-book reader. M4: the Sketch Artist (`/api/books/:id/cast-sheet`, `/api/books/:id/pages/:pageId/art`), cast sheets for the hero, companion and invented citizens, sprite placement with validation, and progressive page loading in the reader. M5: feedback stamps and notes (private to the edit link), the Reviser and its patch (locked pages are enforced in code, not just the prompt), changelog, past editions, restore, and delete. Restoring edition N saves a copy of it as the newest edition, so history is never rewritten. Milestone 6 follows the brief.
+A custom picture-book microsite. A parent fills in blocks about their kid, answers a few questions from the Delivery Man, and the Storyteller writes a short illustrated edition set in Primeland. The family reads it together, records the kid's reactions page by page, and sends it back through the portal for a better edition. The full specification is [`build-brief.md`](build-brief.md). The world lives in [`content/`](content): `SOUL.md`, `characters.md`, `locations.md` and `puzzles.json`.
 
 ## Run it
 
 ```bash
 npm install
-npm run dev      # http://localhost:5173
-npm test
-npm run build    # writes content hashes, type-checks, runs tests, builds client and Worker
+npm run dev        # http://localhost:5173 (Worker and client together)
+npm test           # unit and route tests (the live-API test skips without a key)
+npm run build      # roster checks, content hashes, type-check, tests, build, secret scan
 ```
 
-Local secrets (later milestones) go in `.dev.vars`, which is gitignored. Production secrets are set with `npx wrangler secret put ANTHROPIC_API_KEY`.
+For local runs, create `.dev.vars` (gitignored):
 
-## Secrets and bindings
-
-```bash
-npx wrangler secret put ANTHROPIC_API_KEY
-npx wrangler secret put TURNSTILE_SECRET_KEY   # from your Turnstile widget
-npx wrangler secret put STUDIO_PASSWORD
+```
+ANTHROPIC_API_KEY=sk-ant-...
+TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA   # Cloudflare's always-pass test secret
+STUDIO_PASSWORD=choose-something
 ```
 
-`TURNSTILE_SITE_KEY` in `wrangler.jsonc` is Cloudflare's always-pass **test** key. Replace it with your widget's public site key before launch. The `BOOKS` KV namespace is provisioned automatically on first deploy. For local runs, copy the same names into `.dev.vars` (Turnstile test secret: `1x0000000000000000000000000000000AA`). `ANTHROPIC_BASE_URL` and `TURNSTILE_VERIFY_URL` are optional overrides for pointing a local run at mock servers.
-
-To check milestone 3 against the real API (five varied families, plus the prompt cache): `ANTHROPIC_API_KEY=sk-ant-... npm run test:live`.
+`TURNSTILE_SITE_KEY` in `wrangler.jsonc` is Cloudflare's matching test site key. `ANTHROPIC_BASE_URL` and `TURNSTILE_VERIFY_URL` are optional overrides that let a local run talk to mock servers.
 
 ## Deploy
 
-Connect the repo to Cloudflare Workers Builds with build command `npm run build` and deploy command `npx wrangler deploy`, production branch `main`. A GitHub Actions fallback is in `.github/workflows/deploy.yml`. After a push, open `/api/health` to confirm the new `soul` hash is live. Verify binding syntax in `wrangler.jsonc` against current Cloudflare docs before the first deploy.
+1. `npx wrangler secret put ANTHROPIC_API_KEY`, `TURNSTILE_SECRET_KEY` and `STUDIO_PASSWORD`.
+2. Create a Turnstile widget in the Cloudflare dashboard and put its public site key in `TURNSTILE_SITE_KEY` (`wrangler.jsonc`).
+3. Connect the repo to Cloudflare Workers Builds (build command `npm run build`, deploy command `npx wrangler deploy`, production branch `main`). A GitHub Actions fallback is in `.github/workflows/deploy.yml`. The `BOOKS` KV namespace is provisioned on first deploy.
+4. For a custom domain, uncomment `routes` in `wrangler.jsonc`.
+5. After each push, open `/api/health` to confirm the new `soul` hash is live.
+
+Verify binding syntax in `wrangler.jsonc` against current Cloudflare docs before the first deploy.
 
 ## How to change Primeland
 
-- **Add or edit a character.** Edit `content/characters.md` (new citizens take the next unused prime), run `npm run roster`, approve the new sheet at `/studio/roster`, and redeploy. (The roster build and studio arrive in milestone 2.)
+- **Add or edit a character.** Edit `content/characters.md` (new citizens take the next unused prime), run `npm run roster`, run `npm run draw-roster -- --only <id>` for the new sheet, approve it at `/studio/roster`, and redeploy.
 - **Add a place.** Add a `###` section to `content/locations.md` under the right region and redeploy.
 - **Change the voice or values.** Edit `content/SOUL.md` and redeploy. Every new book uses the new soul, and existing books keep the text they already have until they are revised.
+- **Redraw the canon sprites.** Put the notebook PDFs in `assets-src/` (gitignored, because the repo is public) and run `npm run sprites`.
+
+## How it fits together
+
+- **Content pipeline.** The three content files are bundled into the Worker at build time and are the only world material that reaches a prompt. Every system prompt starts with the soul, marked for prompt caching. Family details only ever appear in the user message. Each book is stamped with the soul's hash and the commit.
+- **Routes.** Interview, book creation (Turnstile, rate limit and a daily budget), the Sketch Artist (cast sheets and per-page art), feedback, revision, past editions, restore and delete. Anything that changes a book needs the private edit token, of which only a SHA-256 hash is stored.
+- **Checks.** The roster parser fails the build on a bad badge. Stories, revisions and drawings are validated on the server (page count, ids, badges, banned names, house style, the family's avoid list, locked pages, drawing format) with one retry and a friendly error.
+- **Privacy.** Nothing about a family is logged. Books expire after 400 days and can be deleted at any time. `public/_headers` sets a strict content security policy.
+
+## Checks you can run
+
+- `npm run test:live` with `ANTHROPIC_API_KEY` set runs five varied families through the real Storyteller and confirms the soul is read from the prompt cache.
+- `npm run draw-roster` draws the roster sheets that don't have a canon sprite.
+- `npm run build` fails if anything that looks like an API key reaches `dist/client`.
 
 ## Fonts
 

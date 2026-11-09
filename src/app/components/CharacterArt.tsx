@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { DrawingRenderer } from "./DrawingRenderer";
-import { useIndex, type RosterEntry } from "../lib/world";
+import { useIndex } from "../lib/sprites";
+import type { RosterEntry } from "../lib/world";
 import type { Drawing } from "../lib/types";
 
 /** The fixed picture of one roster character: canon sprite, uploaded PNG, drawn roster sheet, or a pending placeholder. */
