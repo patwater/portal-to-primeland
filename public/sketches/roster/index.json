@@ -1,1 +1,256 @@
-{ "sheets": [] }
+{
+  "sheets": [
+    {
+      "id": "the-adding-machine",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "alpha-and-beta",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "patch-the-webmaster",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "the-apps",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "one-and-nought-the-binaries",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "connie-conduit",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "digit",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "sparky-the-electric-eel",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "fern-of-the-frontier",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "game",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "hob-the-homebrewer",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "indie",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "jinx-the-joker",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "the-king",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "lou-the-loser",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "mem",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "nega",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "big-o",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "polly-nomial",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "quo-the-quokka",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "qubit",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "rio-the-ratio",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "rate",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "speck",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "sal",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "tenny-the-tenth",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "true",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "total",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "uni",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "vector",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "wendell-the-window",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "xavi-the-x-ray-fish",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "yara-the-yak",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "zara-the-zebra",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "the-delivery-man",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "shilo",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "the-platypuses",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "the-owl",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "eratosthenes",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "the-mouse",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "the-harbormaster",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    },
+    {
+      "id": "the-rangers",
+      "kind": "json",
+      "status": "pending",
+      "source": "hand-authored"
+    }
+  ]
+}

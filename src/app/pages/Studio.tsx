@@ -61,6 +61,7 @@ export function Studio() {
             <RoughBox key={r.id} seed={`studio-${r.id}`} fill className={`studio-card ${approved.includes(r.id) ? "is-selected" : ""}`}>
               <div className="badge-card__art"><CharacterArt entry={r} /></div>
               <h3 className="badge-card__name">{r.name} <span className="soft">({r.tier}{r.badge != null ? ` · ${r.badge}` : ""})</span></h3>
+              {idx?.sheets[r.id]?.source && <p className="margin-note">{idx.sheets[r.id].source} placeholder</p>}
               <RoughButton seed={`ap-${r.id}`} onClick={() => toggle(r.id)} aria-pressed={approved.includes(r.id)}>{approved.includes(r.id) ? "✓ Approved" : "Approve"}</RoughButton>
               <details>
                 <summary>Redraw or replace</summary>

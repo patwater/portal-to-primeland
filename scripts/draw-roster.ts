@@ -70,8 +70,16 @@ async function draw(e: Entry, note?: string) {
   throw new Error(`${e.id}: could not produce a valid drawing`);
 }
 
-function writeIndex() {
-  const sheets = readdirSync(dir).filter((f) => /\.(json|png)$/.test(f) && f !== "index.json").map((f) => ({ id: f.replace(/\.(json|png)$/, ""), kind: f.endsWith(".png") ? "png" : "json", status: "pending" }));
+const handAuthored = (id: string) => existsSync(`${dir}/index.json`) && (JSON.parse(readFileSync(`${dir}/index.json`, "utf8")) as { sheets: { id: string; source?: string }[] }).sheets.some((x) => x.id === id && x.source === "hand-authored");
+
+function writeIndex(redrawn: Set<string>) {
+  // Keep the "hand-authored" mark on sheets this run did not touch; a model-drawn sheet has no source.
+  const old = existsSync(`${dir}/index.json`) ? (JSON.parse(readFileSync(`${dir}/index.json`, "utf8")) as { sheets: { id: string; source?: string }[] }).sheets : [];
+  const sheets = readdirSync(dir).filter((f) => /\.(json|png)$/.test(f) && f !== "index.json").map((f) => {
+    const id = f.replace(/\.(json|png)$/, "");
+    const source = redrawn.has(id) ? undefined : old.find((x) => x.id === id)?.source;
+    return { id, kind: f.endsWith(".png") ? "png" : "json", status: "pending", ...(source ? { source } : {}) };
+  });
   writeFileSync(`${dir}/index.json`, JSON.stringify({ sheets }, null, 2) + "\n");
 }
 
@@ -79,11 +87,13 @@ const only = opt("only");
 const todo = roster.filter((e) => (only ? e.id === only : !canon.has(e.spriteId)));
 if (only && !todo.length) { console.error(`no roster entry "${only}"`); process.exit(1); }
 let done = 0, failed = 0;
+const redrawn = new Set<string>();
 for (const e of todo) {
-  if (!flag("force") && !only && (existsSync(`${dir}/${e.id}.json`) || existsSync(`${dir}/${e.id}.png`))) continue;
+  // A plain run redraws hand-authored placeholders, but never a sheet Patrick replaced with his own PNG.
+  if (!flag("force") && !only && (existsSync(`${dir}/${e.id}.png`) || (existsSync(`${dir}/${e.id}.json`) && !handAuthored(e.id)))) continue;
   console.log(`drawing ${e.name}…`);
-  try { writeFileSync(`${dir}/${e.id}.json`, JSON.stringify(await draw(e, opt("note"))) + "\n"); done++; }
+  try { writeFileSync(`${dir}/${e.id}.json`, JSON.stringify(await draw(e, opt("note"))) + "\n"); redrawn.add(e.id); done++; }
   catch (err) { failed++; console.error(`  failed: ${(err as Error).message}`); }
 }
-writeIndex();
+writeIndex(redrawn);
 console.log(`${done} drawn, ${failed} failed. Review them at /studio/roster.`);

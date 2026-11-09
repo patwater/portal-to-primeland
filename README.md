@@ -25,7 +25,7 @@ STUDIO_PASSWORD=choose-something
 
 1. `npx wrangler secret put ANTHROPIC_API_KEY`, `TURNSTILE_SECRET_KEY` and `STUDIO_PASSWORD`.
 2. Create a Turnstile widget in the Cloudflare dashboard and put its public site key in `TURNSTILE_SITE_KEY` (`wrangler.jsonc`).
-3. Connect the repo to Cloudflare Workers Builds (build command `npm run build`, deploy command `npx wrangler deploy`, production branch `main`). A GitHub Actions fallback is in `.github/workflows/deploy.yml`. The `BOOKS` KV namespace is provisioned on first deploy.
+3. Connect the repo to Cloudflare Workers Builds (build command `npm run build`, deploy command `npx wrangler deploy`, production branch `main`). If the build command is left empty, the repo still deploys: a `postinstall` step builds the app inside Workers Builds (`WORKERS_CI=1`), because `wrangler deploy` needs the build output the Vite plugin generates. A GitHub Actions fallback is in `.github/workflows/deploy.yml`. The `BOOKS` KV namespace is provisioned on first deploy.
 4. For a custom domain, uncomment `routes` in `wrangler.jsonc`.
 5. After each push, open `/api/health` to confirm the new `soul` hash is live.
 
@@ -48,7 +48,7 @@ Verify binding syntax in `wrangler.jsonc` against current Cloudflare docs before
 ## Checks you can run
 
 - `npm run test:live` with `ANTHROPIC_API_KEY` set runs five varied families through the real Storyteller and confirms the soul is read from the prompt cache.
-- `npm run draw-roster` draws the roster sheets that don't have a canon sprite.
+- `npm run hand-sheets` regenerates the 42 hand-authored placeholder roster sheets (no key needed). `npm run draw-roster` (needs a key) replaces them with Sketch Artist drawings, except any you replaced with your own PNG.
 - `npm run build` fails if anything that looks like an API key reaches `dist/client`.
 
 ## Fonts
