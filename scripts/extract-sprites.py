@@ -27,7 +27,7 @@ CANON = [
     ("cube",                 "tails_trip", 2, (182, 594, 392, 794), [], "right", "tails_trip p2, the cube beside Brock", ""),
     ("brock",                "tails_trip", 2, (366, 460, 508, 730), [], "right", "tails_trip p2 (drawn facing front)", ""),
     ("tot-polka-dot",        "tails_trip", 4, (150, 470, 445, 775), [(378, 752, 450, 790)], "right", "tails_trip p4 (Patrick's own Taylor edition only)", ""),
-    ("scissors-chris-steve", "tails_trip", 5, (150, 500, 415, 718), [], "right", "tails_trip p5", ""),
+    ("scissors-snip-snap", "tails_trip", 5, (150, 500, 415, 718), [], "right", "tails_trip p5", ""),
     ("robo-seal",            "tails_trip", 8, (200, 655, 345, 732), [], "right", "tails_trip p8 (labels left to the Sketch Artist)", ""),
     ("scout",                "tails_trip", 8, (345, 680, 482, 728), [], "left", "tails_trip p8 (smartwatch is an overlay drawn by the Sketch Artist)", ""),
     ("data-lake",            "tails_trip", 7, (68, 502, 432, 748), [(15, 535, 132, 602), (335, 505, 470, 590), (412, 572, 440, 668), (15, 735, 210, 800), (290, 745, 400, 800)], "right", "tails_trip p7 (lake and rising structure; margin notes erased)", ""),

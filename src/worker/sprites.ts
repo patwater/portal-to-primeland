@@ -14,7 +14,7 @@ const sheets = new Set((rosterIndex.sheets as { id: string }[]).map((s) => s.id)
 const DESCRIPTIONS: Record<string, string> = {
   cube: "the big blue nylon delivery cube, with A′ on its side",
   brock: "Brock, a bored boy with his hands on his hips, drawn facing front",
-  "scissors-chris-steve": "Chris and Steve, one pair of scissors with a face on each blade, open in an X",
+  "scissors-snip-snap": "Snip and Snap, one pair of scissors with a face on each blade, open in an X",
   "robo-seal": "a Robo-Seal, a stamping swimmer on four legs with a flag-like tail",
   scout: "Scout the dog, small, seen from the side (draw his smartwatch yourself as a few paths on his collar and paw)",
   "data-lake": "the Data Lake: a glittering lake with a shimmering structure rising from it",

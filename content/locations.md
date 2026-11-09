@@ -16,7 +16,7 @@ When the bottom of the cube springs open, travelers fall onto a giant pile of bu
 
 ### The Scissor Gate
 
-Just past the landing, Chris and Steve the scissors cut every arriving number down until it cannot be divided any further, and only then do they let it in. Quo the Quokka tallies how many times each number fits, every even number gets a "2" stamped on its hand, and every arrival is asked "What's your count?" The Adding Machine stands just outside, cranking away, because its badge of 1 keeps it from ever quite getting in. Remainder Row begins right past the gate.
+Just past the landing, Snip and Snap the scissors cut every arriving number down until it cannot be divided any further, and only then do they let it in. Quo the Quokka tallies how many times each number fits, every even number gets a "2" stamped on its hand, and every arrival is asked "What's your count?" The Adding Machine stands just outside, cranking away, because its badge of 1 keeps it from ever quite getting in. Remainder Row begins right past the gate.
 
 ### The Data Lake
 
@@ -34,7 +34,7 @@ The locals call Two "the oddest prime of all" because it is the only even one, a
 
 ### 2. Protocol Plaza
 
-Protocol Plaza is the town square at the foot of the Tower, and it is where Chris and Steve the scissors go to fret about rules. A great chalkboard covers one whole wall of the plaza, and every rule in Primeland is written on it in chalk rather than carved in stone. Anyone can walk up and propose a change, but there is a rule (written at the very top) about how rules get changed, and the scissors guard that one most fiercely of all. Children draw hopscotch squares in the margins, and nobody seems to mind.
+Protocol Plaza is the town square at the foot of the Tower, and it is where Snip and Snap the scissors go to fret about rules. A great chalkboard covers one whole wall of the plaza, and every rule in Primeland is written on it in chalk rather than carved in stone. Anyone can walk up and propose a change, but there is a rule (written at the very top) about how rules get changed, and the scissors guard that one most fiercely of all. Children draw hopscotch squares in the margins, and nobody seems to mind.
 
 Alpha and Beta run their A or B tests here, holding up two of everything for passersby. The plaza gives the "proper protocols?" margin note a home, and it is a place where the traveler can learn that rules are things people make together.
 
@@ -74,7 +74,7 @@ Qubit Quay is a little harbor below the falls where the boats are both tied up a
 
 ### 8. The Platypus Flats
 
-The Platypus Flats are a stretch of mud where the river slows and spreads out, and they are home to creatures that refuse to fit into any box. A platypus has a duck's bill and a beaver's tail, and it lays eggs and still feeds its babies milk. The robo-seals cannot stamp a platypus approved or rejected, so they freeze up and yelp whenever one waddles by. Lately the platypuses have been wandering farther and farther from the flats, and some folks are calling it the Invasion of the Platypus.
+The Platypus Flats are a stretch of mud where the river slows and spreads out, and they are home to creatures that refuse to fit into any box. A platypus has a duck's bill and a beaver's tail, and it lays eggs and still feeds its babies milk. The robo-seals cannot stamp a platypus approved or rejected, so they freeze up and yelp whenever one waddles by. Lately the platypuses have been wandering farther and farther from the flats, and some folks are calling it the Invasion of the Platypus. Pip the Platypus lives in a box of her own at the edge of the flats, built by Patch after the Robo-Seals stamped and unstamped her for a whole week. She was the first thing Primeland ever failed to sort, and she is cheerful about it.
 
 The platypus could be the blip. It works as a picture of the number 1, which is neither prime nor composite, and of all the real-world cases a tidy sorting system never planned for.
 

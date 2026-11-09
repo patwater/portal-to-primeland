@@ -4,7 +4,7 @@ Nov 9, 2026 · Patrick Atwater
 
 ## How the roster works
 
-The roster has 38 entries: two travelers, five keepers or keeper pairs, and 31 citizens drawn from the A-to-Z sketch page. A short list of folk without badges follows the roster, for the people and creatures the locations mention who are not citizens, and they are not part of the count. Each citizen turns one tech or math idea into a creature a small child can point at, with a grown-up joke folded inside, in the same spirit as Steve who cuts corners and Chris who cuts slack.
+The roster has 39 entries: two travelers, five keepers or keeper pairs, and 32 citizens, 31 of them drawn from the A-to-Z sketch page and one, Pip the Platypus, added later as the first new citizen (she takes badge 131). A short list of folk without badges follows the roster, for the people and creatures the locations mention who are not citizens, and they are not part of the count. Each citizen turns one tech or math idea into a creature a small child can point at, with a grown-up joke folded inside, in the same spirit as Snap who cuts corners and Snip who cuts slack.
 
 Patch says that everything under the sun has been pre-assigned a unique prime, so every citizen wears a prime badge. The badge follows a simple rule: the letter's place in the alphabet picks the prime, so A wears 2, B wears 3, and Z wears 101. The second column on the sketch page (Qubit, Rate, Sale, True, Total) takes the next primes after 101, which makes 101 and 103 a pair of twin primes, and 107 and 109 another.
 
@@ -66,11 +66,11 @@ Their favorite game is the A or B test. They hold up two of anything, two hats, 
 
 **Story hook:** The traveler picks neither and asks for C. This breaks their tally, delights them both, and gives them a brand new test to run.
 
-### Chris and Steve
+### Snip and Snap
 
 **Badge:** they hand out badges rather than wearing them. **Look:** a single pair of scissors with a face on each blade.
 
-Chris and Steve are cousins and the gatekeepers of Primeland. Steve cuts corners and Chris cuts slack, and the scissors promise you'll need both. They keep the Scissor Gate, just past the bubble-wrap landing. Their job is to cut every number down until it cannot be divided any further, because only then is it allowed into Primeland. They take the rules very seriously, or at least one of them does.
+Snip and Snap are cousins and the gatekeepers of Primeland. Snap cuts corners and Snip cuts slack, and the scissors promise you'll need both. They keep the Scissor Gate, just past the bubble-wrap landing. Their job is to cut every number down until it cannot be divided any further, because only then is it allowed into Primeland. They take the rules very seriously, or at least one of them does.
 
 The grown-up joke is the question nobody asks: who cuts the cutters? A pair of scissors is two, and two is prime, so there is nothing to cut them down into. They are indivisible, and they are quietly proud of it. But each blade by itself is a one, the Adding Machine's badge, so the cousins are made of exactly what the Adding Machine counts. They have never said so out loud.
 
@@ -120,6 +120,7 @@ Each citizen comes from one word on the sketch page, in alphabet order, with the
 | N · 43 | Nega | A small creature who walks backwards and lives upside down below the lake | Everything is opposite for Nega, who says goodbye for hello and lives below zero. Sector N2 is in his neighborhood, and Patch calls on him whenever something needs complete negation. | "Olleh!" |
 | O · 47 | Big O | A large rolling wheel with a stopwatch face | Big O runs Big O Corral and times every job in Primeland, growing bigger the longer a job takes. Lately he has been swelling, because the sorting is slowing down. | "How long will THAT take?" |
 | P · 53 | Polly Nomial | A parrot with curvy tail feathers | Polly repeats everything she hears, each time bigger and louder than before. Small children find her hilarious. | "Again! Again, again!" |
+| P · 131 | Pip the Platypus | A platypus with a duck bill, a beaver tail, webbed feet, and a basket of her own eggs | Pip was the first thing Primeland ever failed to sort. She has fur like a mammal but lays eggs like a bird, so the Robo-Seals stamped and unstamped her for a whole week until Patch gave up and built her a box of her own. The grown-up joke is that the first scientists to see a platypus thought someone had stitched one together as a prank. Her bill can feel the faint electric hum of the data lake, so she can sense the flicker in sector N2 before anyone sees it. She is also the one who tells the traveler that not fitting in is perfectly fine. | "I'm a little bit of everything, and that's plenty!" |
 | Q · 59 | Quo the Quokka | A small, always-smiling quokka with a tally board | Quo works beside the scissors at the Scissor Gate and counts how many times one number fits inside another. He gathers the pieces after every cut. | "How many fit?" |
 | Q · 103 | Qubit | A spinning top that shows heads and tails at once | Qubit spins at the end of the pier at Qubit Quay and is yes and no at the same time until somebody looks. It flickers when unobserved, which may make it the blip in N2 that the seals cannot stamp. | "Maybe!" |
 | R · 61 | Rio the Ratio | A seesaw with a face at each end | Rio keeps things in balance: two scoops for you, one scoop for me. Rio mixes every recipe in Primeland. | "Two to one!" |
@@ -138,14 +139,14 @@ Each citizen comes from one word on the sketch page, in alphabet order, with the
 
 ## Folk without badges
 
-These people and creatures turn up in the story and in `locations.md`, but none of them wears a prime badge. Patch says everything under the sun has been pre-assigned a unique prime, and this list shows that his system is less complete than he thinks, which is useful story fuel. They are not part of the 38-entry roster.
+These people and creatures turn up in the story and in `locations.md`, but none of them wears a prime badge. Patch says everything under the sun has been pre-assigned a unique prime, and this list shows that his system is less complete than he thinks, which is useful story fuel. They are not part of the 39-entry roster.
 
 | Name | Where | Look | Why no badge | Signature |
 | --- | --- | --- | --- | --- |
 | The Delivery Man | The Long and Lonesome Hill | An old fellow with gray hair, striped shorts, a matching smock, and a sparkle in his eye, dragging a big blue nylon cube | He works on our side of the box. Mem remembers him leaving cubes on the hill before. | Laughs instead of scolding, and leaves the cube behind on purpose |
 | Brock | The Long and Lonesome Hill | A boy with his hands on his hips, glowering at his sock | He never goes through the box, because he only wanted what came in it | Tears open the thingamajig and races off |
 | Shilo | The Long and Lonesome Hill | Brock's dog, drawn small in the background | He stays with Brock | Watches the cube after everyone leaves |
-| The Platypuses | The Platypus Flats, and lately everywhere | Duck bills, beaver tails, waddling in small groups | The Robo-Seals cannot stamp them either way | Wander off the flats, and the seals freeze and yelp |
+| The Platypuses | The Platypus Flats, and lately everywhere | Duck bills, beaver tails, waddling in small groups | The Robo-Seals cannot stamp them either way (only Pip the Platypus, a citizen, has a badge, from a box Patch built her) | Wander off the flats, and the seals freeze and yelp |
 | The Owl | The Zero Knowledge Grotto | A stern owl at the cave mouth | It does not want to know your number, only that you know your word | "Come out on the left!" |
 | Eratosthenes | The Sifting Sands | A bearded old man shaking a giant sieve | He was sifting primes long before anyone handed out badges | Tells you how he measured the Earth with a stick and a shadow, whether you ask or not |
 | The Mouse | Xerox Park | A small mouse who points at things for visitors | It is a pointer rather than a number | Points |

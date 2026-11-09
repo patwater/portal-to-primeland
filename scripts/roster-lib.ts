@@ -2,7 +2,7 @@
 // checks from section 4.2 and 5.1 of the build brief. Pure functions, so tests can feed them bad input.
 
 /** Patrick may change these after confirming a new total. */
-export const ROSTER_COUNT = 38;
+export const ROSTER_COUNT = 39;
 export const UNNUMBERED_PLACES = 4;
 export const NUMBERED_PLACES = 17;
 
@@ -31,7 +31,7 @@ export const nthPrime = (n: number) => {
 export const CANON_SPRITES: Record<string, string> = {
   taylor: "tot-polka-dot",
   "scout-the-watchdog": "scout",
-  "chris-and-steve": "scissors-chris-steve",
+  "snip-and-snap": "scissors-snip-snap",
   "the-robo-seals": "robo-seal",
   brock: "brock",
 };
@@ -152,13 +152,15 @@ function firstPlaceIn(text: string, places: Place[]): Place | undefined {
   return best?.p;
 }
 
-/** Fill each citizen's and folk's `home` with a place id: the place their own text names, else one that lists them. */
+/** Fill each citizen's and folk's `home` with a place id (see the rule below). */
 export function assignHomes(roster: RosterEntry[], places: Place[]) {
   for (const e of roster) {
     if (e.tier !== "citizen" && e.tier !== "folk") continue;
     const named = firstPlaceIn(e.tier === "folk" ? (e.home ?? "") : e.background, places);
     const listed = places.find((p) => p.residents.includes(e.id));
-    const hit = named ?? listed;
+    // locations.md is the authority on places: a place both the character's text and the place's own description name wins;
+    // otherwise the place that lists her as a resident; otherwise the first place her own text mentions.
+    const hit = named && named.residents.includes(e.id) ? named : (listed ?? named);
     if (hit) e.home = hit.id;
     else if (e.tier === "citizen") delete e.home;
   }

@@ -2,7 +2,7 @@ import type { FamilyBlocks, Interview, Story } from "../src/worker/schemas";
 import { blocksSchema } from "../src/worker/schemas";
 
 export const blocks = (over: Record<string, unknown> = {}): FamilyBlocks =>
-  blocksSchema.parse({ name: "Zzyzx", age: 4, companion: "cat", keepers: ["chris-and-steve"], brock: true, length: 10, ...over });
+  blocksSchema.parse({ name: "Zzyzx", age: 4, companion: "cat", keepers: ["snip-and-snap"], brock: true, length: 10, ...over });
 
 const PLACES = ["the-long-and-lonesome-hill", "the-long-and-lonesome-hill", "the-bubble-wrap-landing", "the-scissor-gate", "the-data-lake",
   "the-data-lake", "the-scissor-gate", "terminus", "qubit-quay", "the-long-and-lonesome-hill"];
@@ -18,7 +18,7 @@ export function story(n = 10, over: Partial<Story> = {}): Story {
     ],
     pages: Array.from({ length: n }, (_, i) => ({
       id: `p${i + 1}`, n: i + 1, text: WORDS, place: PLACES[i % PLACES.length],
-      characters: i === 3 ? ["zzyzx", "biscuit", "chris-and-steve"] : ["zzyzx", "biscuit"],
+      characters: i === 3 ? ["zzyzx", "biscuit", "snip-and-snap"] : ["zzyzx", "biscuit"],
       art: { brief: "The kid and the cat by the box." },
     })),
     ...over,

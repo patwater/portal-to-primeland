@@ -47,16 +47,16 @@
     "spriteId": "alpha-and-beta"
   },
   {
-    "id": "chris-and-steve",
+    "id": "snip-and-snap",
     "tier": "keeper",
-    "name": "Chris and Steve",
+    "name": "Snip and Snap",
     "badge": null,
     "badgeNote": "they hand out badges rather than wearing them",
     "look": "a single pair of scissors with a face on each blade.",
-    "background": "Chris and Steve are cousins and the gatekeepers of Primeland. Steve cuts corners and Chris cuts slack, and the scissors promise you'll need both. They keep the Scissor Gate, just past the bubble-wrap landing. Their job is to cut every number down until it cannot be divided any further, because only then is it allowed into Primeland. They take the rules very seriously, or at least one of them does.\n\nThe grown-up joke is the question nobody asks: who cuts the cutters? A pair of scissors is two, and two is prime, so there is nothing to cut them down into. They are indivisible, and they are quietly proud of it. But each blade by itself is a one, the Adding Machine's badge, so the cousins are made of exactly what the Adding Machine counts. They have never said so out loud.",
+    "background": "Snip and Snap are cousins and the gatekeepers of Primeland. Snap cuts corners and Snip cuts slack, and the scissors promise you'll need both. They keep the Scissor Gate, just past the bubble-wrap landing. Their job is to cut every number down until it cannot be divided any further, because only then is it allowed into Primeland. They take the rules very seriously, or at least one of them does.\n\nThe grown-up joke is the question nobody asks: who cuts the cutters? A pair of scissors is two, and two is prime, so there is nothing to cut them down into. They are indivisible, and they are quietly proud of it. But each blade by itself is a one, the Adding Machine's badge, so the cousins are made of exactly what the Adding Machine counts. They have never said so out loud.",
     "says": "\"What's your count?\"",
     "hook": "In the first draft, Taylor pokes them in the center spot, says \"Gray!\", and runs off. Every traveler answers \"What's your count?\" in their own way. They are still shouting about proper protocols when she disappears down the path. A traveler who asks the scissors \"How do you get cut?\" gets a long, fussy, flustered answer ending in \"We are a pair. A pair is two. Two is prime. Nobody cuts us,\" and a very small silence where one blade looks at the other.",
-    "spriteId": "scissors-chris-steve"
+    "spriteId": "scissors-snip-snap"
   },
   {
     "id": "patch-the-webmaster",
@@ -285,6 +285,19 @@
     "hook": "Polly repeats everything she hears, each time bigger and louder than before. Small children find her hilarious.",
     "says": "Again! Again, again!",
     "spriteId": "polly-nomial"
+  },
+  {
+    "id": "pip-the-platypus",
+    "tier": "citizen",
+    "name": "Pip the Platypus",
+    "letter": "P",
+    "badge": 131,
+    "look": "A platypus with a duck bill, a beaver tail, webbed feet, and a basket of her own eggs",
+    "background": "Pip was the first thing Primeland ever failed to sort. She has fur like a mammal but lays eggs like a bird, so the Robo-Seals stamped and unstamped her for a whole week until Patch gave up and built her a box of her own. The grown-up joke is that the first scientists to see a platypus thought someone had stitched one together as a prank. Her bill can feel the faint electric hum of the data lake, so she can sense the flicker in sector N2 before anyone sees it. She is also the one who tells the traveler that not fitting in is perfectly fine.",
+    "hook": "Pip was the first thing Primeland ever failed to sort. She has fur like a mammal but lays eggs like a bird, so the Robo-Seals stamped and unstamped her for a whole week until Patch gave up and built her a box of her own. The grown-up joke is that the first scientists to see a platypus thought someone had stitched one together as a prank. Her bill can feel the faint electric hum of the data lake, so she can sense the flicker in sector N2 before anyone sees it. She is also the one who tells the traveler that not fitting in is perfectly fine.",
+    "says": "I'm a little bit of everything, and that's plenty!",
+    "spriteId": "pip-the-platypus",
+    "home": "the-platypus-flats"
   },
   {
     "id": "quo-the-quokka",
@@ -517,9 +530,9 @@
     "name": "The Platypuses",
     "home": "the-platypus-flats",
     "badge": null,
-    "badgeNote": "The Robo-Seals cannot stamp them either way",
+    "badgeNote": "The Robo-Seals cannot stamp them either way (only Pip the Platypus, a citizen, has a badge, from a box Patch built her)",
     "look": "Duck bills, beaver tails, waddling in small groups",
-    "background": "The Robo-Seals cannot stamp them either way",
+    "background": "The Robo-Seals cannot stamp them either way (only Pip the Platypus, a citizen, has a badge, from a box Patch built her)",
     "hook": "",
     "says": "Wander off the flats, and the seals freeze and yelp",
     "spriteId": "the-platypuses"

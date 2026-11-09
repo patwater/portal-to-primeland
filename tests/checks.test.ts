@@ -13,7 +13,8 @@ describe("checkStory", () => {
   });
   it("checks custom citizen badges: prime, unused, after the roster's highest", () => {
     const add = (badge: number | null) => { const s = story(); s.cast.push({ id: "gus", name: "Gus", tier: "citizen", badge, look: "x", custom: true }); return errs(s); };
-    expect(add(131)).toBe("");
+    expect(add(137)).toBe("");                               // the next unused prime now that Pip wears 131
+    expect(add(131)).toMatch(/already taken/);             // Pip
     expect(add(133)).toMatch(/needs a prime badge|taken/);   // 133 = 7 x 19
     expect(add(127)).toMatch(/already taken/);               // Total wears 127
     expect(add(null)).toMatch(/needs a prime badge/);

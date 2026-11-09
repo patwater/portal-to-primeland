@@ -11,11 +11,11 @@ import { blocksSchema } from "../src/worker/schemas";
 
 const env = { ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY, MODEL_STORY: process.env.MODEL_STORY, MODEL_INTERVIEW: process.env.MODEL_INTERVIEW };
 const families = [
-  { name: "Ivy", age: 3, companion: "cat", places: ["the-tower-of-two", "lamplight-road"], keepers: ["chris-and-steve", "the-adding-machine"], puzzle: "what-is-4", n2: "qubit", mood: "calm", length: 6, avoid: "spiders, loud noises" },
+  { name: "Ivy", age: 3, companion: "cat", places: ["the-tower-of-two", "lamplight-road"], keepers: ["snip-and-snap", "the-adding-machine"], puzzle: "what-is-4", n2: "qubit", mood: "calm", length: 6, avoid: "spiders, loud noises" },
   { name: "Mateo", age: 5, companion: "real", petName: "Rufus", petKind: "beagle", petDetail: "howls at the mailman", places: ["the-mines-of-many-primes", "the-data-cave", "big-o-corral"], keepers: ["patch-the-webmaster", "alpha-and-beta"], puzzle: "one-more-tunnel", n2: "platypuses", mood: "giggly", length: 10, avoid: "the dark" },
-  { name: "Noor", age: 7, companion: "robot", places: ["the-sifting-sands", "the-zero-knowledge-grotto", "terminus"], keepers: ["chris-and-steve", "the-robo-seals"], puzzle: "secret-word", n2: "traveler", mood: "adventure", length: 14, rhyme: "lots", math: "sieves", realLife: "a new baby sibling is coming" },
+  { name: "Noor", age: 7, companion: "robot", places: ["the-sifting-sands", "the-zero-knowledge-grotto", "terminus"], keepers: ["snip-and-snap", "the-robo-seals"], puzzle: "secret-word", n2: "traveler", mood: "adventure", length: 14, rhyme: "lots", math: "sieves", realLife: "a new baby sibling is coming" },
   { name: "Sam", age: 4, companion: "none", arrival: "porch", brock: false, places: ["homebrew-hollow", "xerox-park"], keepers: ["patch-the-webmaster"], puzzle: "a-or-b", n2: "one", mood: "calm", length: 10, ending: "souvenir" },
-  { name: "Lila", age: 6, companion: "scout", arrival: "grandma", places: ["seventh-falls", "qubit-quay", "the-platypus-flats"], keepers: ["alpha-and-beta", "chris-and-steve"], puzzle: "flickering-node", n2: "story", mood: "giggly", length: 10, ending: "cliffhanger", avoid: "storms" },
+  { name: "Lila", age: 6, companion: "scout", arrival: "grandma", places: ["seventh-falls", "qubit-quay", "the-platypus-flats"], keepers: ["alpha-and-beta", "snip-and-snap"], puzzle: "flickering-node", n2: "story", mood: "giggly", length: 10, ending: "cliffhanger", avoid: "storms" },
 ].map((f) => blocksSchema.parse(f));
 
 describe.skipIf(!env.ANTHROPIC_API_KEY)("live: five families", () => {

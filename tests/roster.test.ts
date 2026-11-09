@@ -8,7 +8,7 @@ const locations = readFileSync("content/locations.md", "utf8");
 describe("the real content files", () => {
   const { roster, places, errors } = buildAll(characters, locations);
   it("passes every roster and place check", () => expect(errors).toEqual([]));
-  it("has 38 counted entries and keeps folk out of the count", () => {
+  it("has 39 counted entries and keeps folk out of the count", () => {
     expect(roster.filter((r) => r.tier !== "folk")).toHaveLength(ROSTER_COUNT);
     expect(roster.filter((r) => r.tier === "folk").every((f) => f.badge === null)).toBe(true);
   });
@@ -21,8 +21,20 @@ describe("the real content files", () => {
     expect(places.filter((p) => p.number != null)).toHaveLength(17);
     expect(places.find((p) => p.id === "the-alphabet-bazaar")!.residents).toContain("sal");
   });
-  it("points chris-and-steve at the canon scissors sprite", () => {
-    expect(roster.find((r) => r.id === "chris-and-steve")!.spriteId).toBe("scissors-chris-steve");
+  it("has Pip the Platypus as the first new citizen, with badge 131 and her own line", () => {
+    const pip = roster.find((r) => r.id === "pip-the-platypus")!;
+    expect(pip).toMatchObject({ tier: "citizen", badge: 131, letter: "P", home: "the-platypus-flats" });
+    expect(pip.says).toBe("I'm a little bit of everything, and that's plenty!");
+    expect(pip.background).toMatch(/first thing Primeland ever failed to sort/);
+    expect(places.find((p) => p.id === "the-platypus-flats")!.residents).toContain("pip-the-platypus");
+  });
+  it("renamed the scissors everywhere in the roster", () => {
+    const names = JSON.stringify(roster) + JSON.stringify(places);
+    expect(names).toMatch(/Snip and Snap/);
+    expect(names).not.toMatch(/Chris|Steve/i);
+  });
+  it("points snip-and-snap at the canon scissors sprite", () => {
+    expect(roster.find((r) => r.id === "snip-and-snap")!.spriteId).toBe("scissors-snip-snap");
   });
 });
 
@@ -32,7 +44,7 @@ describe("the checks fail loudly", () => {
   it("rejects a duplicate badge", () => fails(characters.replace("| E · 11 |", "| E · 7 |"), /share badge 7/));
   it("rejects a wrong second-column badge", () => fails(characters.replace("| Q · 103 |", "| Q · 131 |"), /Qubit should wear 103/));
   it("rejects folk whose place is not in locations.md", () => fails(characters.replace("| The Mouse | Xerox Park |", "| The Mouse | Nowhere Land |"), /matches no place/));
-  it("rejects a missing citizen", () => fails(characters.replace(/^\| Z · 101 .*$/m, ""), /letter Z|expected 38/));
+  it("rejects a missing citizen", () => fails(characters.replace(/^\| Z · 101 .*$/m, ""), /letter Z|expected 39/));
   it("rejects the wrong place count", () => {
     const { errors } = buildAll(characters, locations.replace(/### 17\. Terminus[^]*$/, ""));
     expect(errors.join("\n")).toMatch(/expected 4 unnumbered and 17 numbered/);

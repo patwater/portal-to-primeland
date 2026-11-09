@@ -58,7 +58,12 @@ function Multi({ values, onChange, options, name }: { values: string[]; onChange
 }
 
 export function Blocks() {
-  const [b, setB] = useState<B>(() => ({ ...defaultBlocks, ...load<Partial<B>>("primeland.blocks", {}) }));
+  const [b, setB] = useState<B>(() => {
+    // Saved blocks can name characters or places that have since been renamed or removed: keep only ids that still exist.
+    const saved = { ...defaultBlocks, ...load<Partial<B>>("primeland.blocks", {}) };
+    const known = (ids: string[], pool: { id: string }[]) => ids.filter((id) => pool.some((x) => x.id === id));
+    return { ...saved, keepers: known(saved.keepers ?? [], keepers), citizens: known(saved.citizens ?? [], citizens), places: known(saved.places ?? [], numberedPlaces) };
+  });
   const [tried, setTried] = useState(false);
   const set = <K extends keyof B>(k: K, v: B[K]) =>
     setB((cur) => {

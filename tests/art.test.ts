@@ -74,13 +74,13 @@ describe("page art", () => {
   it("offers sprites for the page's characters and requires them to be placed", async () => {
     const env = mkEnv(); const b = await newBook(env);
     await cast(env, b.id, "zzyzx", b.editToken); await cast(env, b.id, "biscuit", b.editToken);
-    const res = await art(env, b.id, "p4", b.editToken); // p4 has the kid, the cat and Chris and Steve
+    const res = await art(env, b.id, "p4", b.editToken); // p4 has the kid, the cat and Snip and Snap
     expect(res.status).toBe(200);
     const user = JSON.parse(artReqs().at(-1)!.body).messages[0].content as string;
-    for (const id of ["cast:zzyzx", "cast:biscuit", "scissors-chris-steve"]) expect(user).toContain(`"id":"${id}"`);
+    for (const id of ["cast:zzyzx", "cast:biscuit", "scissors-snip-snap"]) expect(user).toContain(`"id":"${id}"`);
     expect(user).toContain("<format>");
     const d = (await res.json()) as { drawing: { elements: { spriteId?: string }[] } };
-    expect(d.drawing.elements.filter((e) => e.spriteId).map((e) => e.spriteId)).toEqual(expect.arrayContaining(["cast:zzyzx", "scissors-chris-steve"]));
+    expect(d.drawing.elements.filter((e) => e.spriteId).map((e) => e.spriteId)).toEqual(expect.arrayContaining(["cast:zzyzx", "scissors-snip-snap"]));
   });
 
   it("uses the same cast sprite for the hero on every page", async () => {

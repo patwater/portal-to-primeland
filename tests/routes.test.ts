@@ -129,7 +129,7 @@ describe("POST /api/books", () => {
   });
 
   it("strips control characters and caps long fields before they reach the model", async () => {
-    await create(mkEnv(), { blocks: { name: "Zz\u0007yzx", age: 4, look: "x".repeat(500), length: 10, companion: "cat", keepers: ["chris-and-steve"] } });
+    await create(mkEnv(), { blocks: { name: "Zz\u0007yzx", age: 4, look: "x".repeat(500), length: 10, companion: "cat", keepers: ["snip-and-snap"] } });
     const user = JSON.parse(anthropicCalls()[0].body).messages[0].content as string;
     expect(user).toContain("Traveler's name: Zzyzx");
     expect(user).not.toMatch(/\u0007/);

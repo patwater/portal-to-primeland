@@ -15,7 +15,7 @@ export const defaultBlocks: Blocks = {
   loves: ["", "", ""], giggle: "",
   companion: "scout", petName: "", petKind: "", petDetail: "",
   arrival: "hill", arrivalCustom: "", brock: true, thingamajig: "the thingamajig",
-  places: [], keepers: ["chris-and-steve"], citizens: [], surprise: true, density: "some",
+  places: [], keepers: ["snip-and-snap"], citizens: [], surprise: true, density: "some",
   puzzle: "what-is-4", n2: "story", mood: "calm", rhyme: "sprinkles", math: "primes", length: 10, ending: "dinner",
   title: "A Portal to Primeland", dedication: "", byline: "", paper: "lined",
   avoid: "", realLife: "",

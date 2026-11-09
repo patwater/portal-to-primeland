@@ -15,7 +15,7 @@ Everything the AI knows about Primeland comes from three Markdown files that Pat
 | File | What it holds | Who wins on conflicts |
 |---|---|---|
 | `content/SOUL.md` | The distilled soul of the book: worldview and ten convictions, the canon first-draft plot, prose voice, sketch style, lexicon, the prime badge rule, guardrails, open threads, and voice anchors. It was derived from Patrick's notebooks and replaces them in every prompt. | Voice, values, and style |
-| `content/characters.md` | "Primeland Character Backgrounds": 38 entries, made up of 2 travelers, 5 keepers or keeper pairs, and 31 A-to-Z citizens with prime badges, plus a short list of folk without badges. Each has a badge, look, background, catchphrase, and story hook. | Facts about characters |
+| `content/characters.md` | "Primeland Character Backgrounds": 39 entries, made up of 2 travelers, 5 keepers or keeper pairs, and 32 citizens (31 A-to-Z plus Pip the Platypus, badge 131) with prime badges, plus a short list of folk without badges. Each has a badge, look, background, catchphrase, and story hook. | Facts about characters |
 | `content/locations.md` | "Seventeen Locations in Primeland": four unnumbered places from the first draft where every journey begins, then seventeen numbered places, with the residents of each named. | Facts about places |
 
 Read all three in full before writing any code. When the brief below and these files disagree about the world, the files win. When `characters.md` and `locations.md` disagree with each other, follow Part VII of SOUL.md.
@@ -183,7 +183,7 @@ Choose one: **Scout the Watchdog** (canon: a nervous dog tangled in a smartwatch
 Multi-select, two to four places, shown as a hand-drawn map of Primeland on square grid paper with each place as a tappable sketch. The list comes from `content/locations.md` (section 5), so Patrick can add places without code changes. The bubble-wrap landing and the Scissor Gate are always included, because every edition passes through them.
 
 ### E. Who to meet
-- **Keepers**: pick one to three of the five keepers (the Adding Machine, Alpha and Beta, Chris and Steve, Patch the Webmaster, the Robo-Seals). Chris and Steve are preselected because the Scissor Gate is unavoidable.
+- **Keepers**: pick one to three of the five keepers (the Adding Machine, Alpha and Beta, Snip and Snap, Patch the Webmaster, the Robo-Seals). Snip and Snap are preselected because the Scissor Gate is unavoidable.
 - **Citizens**: a grid of 31 badge cards, one per A-to-Z citizen, each showing the citizen's sketch, name, prime badge, and catchphrase. The parent can tick any number of them. A "Surprise me" toggle with a density choice (a few, some, or lots) fills the background with citizens chosen to suit the places picked.
 - **Read the cards together**: a link that opens the citizen grid full-screen as a card-flipping game, so a parent can let the kid choose who to meet.
 
@@ -228,7 +228,7 @@ The parser reads four kinds of entries:
 - **Travelers** are the `###` headings under "The travelers", with bold `Badge:` and `Look:` fields, a background paragraph, `Says:`, and `Story hook:`.
 - **Keepers** are the `###` headings under "Keepers of Primeland", using the same fields.
 - **Citizens** are the rows of the table under "The A-to-Z citizens", with the columns Badge, Character, Look, Background and story hook, and Says. The Badge cell looks like `A · 2`. Split it into `letter` and `prime`.
-- **Folk** are the rows of the table under "Folk without badges", with the columns Name, Where, Look, Why no badge, and Signature. They get `tier: "folk"` and `badge: null`, appear in illustrations and stories, and never appear in the citizen picker. They do not count toward the 38.
+- **Folk** are the rows of the table under "Folk without badges", with the columns Name, Where, Look, Why no badge, and Signature. They get `tier: "folk"` and `badge: null`, appear in illustrations and stories, and never appear in the citizen picker. They do not count toward the 39.
 
 Each roster entry becomes `{ id, tier: "traveler" | "keeper" | "citizen" | "folk", name, home?, letter?, badge: number | null, badgeNote?, look, background, says, hook, spriteId }`. Make ids kebab-case from names (`connie-conduit`, `xavi-the-x-ray-fish`).
 
@@ -236,7 +236,7 @@ The build fails loudly if any of these checks fail:
 - Every citizen badge is prime, and no two entries share a badge.
 - Each of the 26 letters has a citizen whose badge is the letter's prime (the n-th prime for the n-th letter).
 - The second-column citizens (Qubit, Rate, Sal, True, Total) carry the next primes after 101, in order.
-- The total is 38 entries, not counting folk, or a different number that Patrick has confirmed in a `ROSTER_COUNT` constant.
+- The total is 39 entries, not counting folk, or a different number that Patrick has confirmed in a `ROSTER_COUNT` constant.
 - No folk entry has a badge.
 - Every place named as a citizen's or folk's home (the `home` field, filled by matching place names from `places.json` in their text) exists in `locations.md`.
 
@@ -244,11 +244,11 @@ The build fails loudly if any of these checks fail:
 
 ### 4.3 Roster sketches
 
-Patrick has drawn only a few of the 38 characters so far. To keep every character looking the same across all books, generate each one's picture **once**, at build time rather than per book, and store it as a static asset.
+Patrick has drawn only a few of the 39 characters so far. To keep every character looking the same across all books, generate each one's picture **once**, at build time rather than per book, and store it as a static asset.
 
 1. Characters with a canon sprite from the notebooks (section 7.3) use it.
 2. Every other character gets a **roster sheet**: run the Sketch Artist once per character with its `look` field, producing a `Drawing` (section 7.2) around 220 × 300, and save it to `public/sketches/roster/{id}.json`. This is a script (`scripts/draw-roster.ts`), not a runtime route.
-3. Build a review page at `/studio/roster` (protected by a `STUDIO_PASSWORD` secret) that shows all 38 sheets on dot-grid paper. Each sheet has buttons to approve it, redraw it with a note, or replace it with an uploaded transparent PNG. Patrick will gradually redraw favorites on his reMarkable and swap them in.
+3. Build a review page at `/studio/roster` (protected by a `STUDIO_PASSWORD` secret) that shows all 39 sheets on dot-grid paper. Each sheet has buttons to approve it, redraw it with a note, or replace it with an uploaded transparent PNG. Patrick will gradually redraw favorites on his reMarkable and swap them in.
 4. Pages place roster characters by `spriteId` and never redraw them.
 
 ### 4.4 Keep it original
@@ -357,7 +357,7 @@ Initial sprites to extract:
 | `cube` | tails_trip p2 (the cube beside Brock), primeland.pdf (the "Prime" box) |
 | `brock` | tails_trip p2 |
 | `tot-polka-dot` | tails_trip p4 (use only in Patrick's own Taylor edition, never as a generic hero) |
-| `scissors-chris-steve` | tails_trip p5 |
+| `scissors-snip-snap` | tails_trip p5 |
 | `robo-seal` | tails_trip p8 |
 | `scout` | tails_trip p8 (add his smartwatch as a separate overlay sprite drawn by the Sketch Artist, so the canon dog stays Patrick's line) |
 | `data-lake` | tails_trip p7 (the lake and rising structure, without the margin notes) |
@@ -482,7 +482,7 @@ Schema: `{ changes: [{ op: "update" | "insert" | "remove", pageId, afterPageId?,
 ├─ assets-src/                   # Patrick's notebook PDFs, for sprite extraction only; never deployed
 ├─ content/                      # the source of truth Patrick edits
 │  ├─ SOUL.md                    # the book's soul; first block of every prompt
-│  ├─ characters.md              # 38-entry roster (Primeland Character Backgrounds)
+│  ├─ characters.md              # 39-entry roster (Primeland Character Backgrounds)
 │  ├─ locations.md               # Seventeen Locations in Primeland
 │  └─ puzzles.json
 ├─ scripts/
@@ -523,7 +523,7 @@ Work in this order. Show Patrick the result of each milestone before starting th
 *Done when:* the reader shows every page, page turning works on desktop and mobile, and the print view produces a clean PDF. The deploy pipeline from section 2.5 also works end to end: a trivial edit to `SOUL.md` pushed to `main` deploys automatically, and `/api/health` shows the new hash within a few minutes.
 
 **M2. Roster, places, and sprites.** Write `build-roster.ts` with all of its checks, extract the canon sprites and sketchbook extras, run `draw-roster.ts` for the remaining characters, and build the `/studio/roster` review page and the badge-card grid.
-*Done when:* the build passes the badge checks for all 38 entries; every roster character has a sheet that Patrick can approve, redraw, or replace; each canon sprite has a transparent background with no visible grid dots or lines; and `assets-src/sprite-todo.md` lists anything that could not be isolated.
+*Done when:* the build passes the badge checks for all 39 entries; every roster character has a sheet that Patrick can approve, redraw, or replace; each canon sprite has a transparent background with no visible grid dots or lines; and `assets-src/sprite-todo.md` lists anything that could not be isolated.
 
 **M3. Interview and story generation.** Build the Worker routes, the prompt assembler with caching, the Claude wrapper, the Interviewer, the Storyteller, and the output checks, plus Turnstile, rate limiting, and the daily budget.
 *Done when:* five varied test families (different ages, companions, places, puzzles, N2 candidates, moods, and "avoid" notes) each produce a valid book with correct math, the right page count, honored avoid-notes, citizens who use their own catchphrases, correct badges on any new citizens, and no denylisted names. Confirm in the API usage data that the soul block is being read from the cache on repeat calls.

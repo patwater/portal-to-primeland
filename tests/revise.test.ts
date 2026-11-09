@@ -33,7 +33,7 @@ const mkEnv = () => ({ ANTHROPIC_API_KEY: "sk", TURNSTILE_SECRET_KEY: "t", BOOKS
 const call = (env: never, method: string, path: string, body?: unknown, token?: string) =>
   app.fetch(new Request(`http://x${path}`, { method, body: body === undefined ? undefined : JSON.stringify(body), headers: { "content-type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) } }), env);
 async function newBook(env: never) {
-  const r = await call(env, "POST", "/api/books", { blocks: blocks({ companion: "scout", keepers: ["chris-and-steve"] }), answers: [], turnstileToken: "x" });
+  const r = await call(env, "POST", "/api/books", { blocks: blocks({ companion: "scout", keepers: ["snip-and-snap"] }), answers: [], turnstileToken: "x" });
   return (await r.json()) as { id: string; editToken: string; book: StoredBook };
 }
 const revise = (env: never, id: string, token: string, feedback?: unknown) => call(env, "POST", `/api/books/${id}/revise`, { feedback, turnstileToken: "x" }, token);
