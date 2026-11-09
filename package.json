@@ -14,7 +14,9 @@
     "draw-roster": "tsx scripts/draw-roster.ts",
     "test:live": "vitest run tests/live.test.ts",
     "hand-sheets": "tsx scripts/hand-sheets.ts",
-    "postinstall": "node scripts/ci-build.mjs"
+    "postinstall": "node scripts/ci-build.mjs",
+    "pretest": "tsx scripts/content-version.ts",
+    "predev": "tsx scripts/content-version.ts"
   },
   "dependencies": {
     "hono": "^4.13.17",
