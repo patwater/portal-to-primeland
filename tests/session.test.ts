@@ -12,7 +12,7 @@ beforeEach(() => {
 });
 afterEach(() => vi.unstubAllGlobals());
 
-const mkEnv = (over: Record<string, unknown> = {}) => ({ ANTHROPIC_API_KEY: "sk", TURNSTILE_ENABLED: "false", BOOKS: memoryKV(), ...over }) as never;
+const mkEnv = (over: Record<string, unknown> = {}) => ({ ANTHROPIC_API_KEY: "sk", ANTHROPIC_RETRY_MS: "0", TURNSTILE_ENABLED: "false", BOOKS: memoryKV(), ...over }) as never;
 const create = (env: never, cookie?: string, ip = "1.1.1.1", url = "http://x") =>
   app.fetch(new Request(`${url}/api/books`, { method: "POST", body: JSON.stringify({ blocks: blocks(), answers: [] }), headers: { "content-type": "application/json", "cf-connecting-ip": ip, ...(cookie ? { cookie } : {}) } }), env);
 const cfg = async (env: never, cookie?: string) => (await (await app.fetch(new Request("http://x/api/config", { headers: cookie ? { cookie } : {} }), env)).json()) as { booksLeft: number; bookLimit: number };

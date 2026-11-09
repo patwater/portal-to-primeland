@@ -20,7 +20,7 @@ beforeEach(() => {
 });
 afterEach(() => vi.unstubAllGlobals());
 
-const mkEnv = (over: Record<string, unknown> = {}) => ({ ANTHROPIC_API_KEY: "sk-secret", TURNSTILE_SECRET_KEY: "ts", BOOKS: memoryKV(), DAILY_BOOK_BUDGET: "200", ...over }) as never;
+const mkEnv = (over: Record<string, unknown> = {}) => ({ ANTHROPIC_API_KEY: "sk-secret", ANTHROPIC_RETRY_MS: "0", TURNSTILE_SECRET_KEY: "ts", BOOKS: memoryKV(), DAILY_BOOK_BUDGET: "200", ...over }) as never;
 const post = (path: string, body: unknown, env: never) =>
   app.fetch(new Request(`http://x${path}`, { method: "POST", body: JSON.stringify(body), headers: { "content-type": "application/json" } }), env);
 const create = (env: never, extra: Record<string, unknown> = {}) => post("/api/books", { blocks: blocks(), answers: [], turnstileToken: "tok", ...extra }, env);
@@ -82,7 +82,7 @@ describe("POST /api/books", () => {
     const res = await create(mkEnv());
     expect(res.status).toBe(502);
     expect(await res.text()).not.toMatch(/secret upstream|Zzyzx/);
-    expect(anthropicCalls()).toHaveLength(2);
+    expect(anthropicCalls()).toHaveLength(3);
   });
 
   it("rejects a failed Turnstile check before spending anything", async () => {

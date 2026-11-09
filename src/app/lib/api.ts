@@ -8,7 +8,7 @@ export type Answer = { id: string; text: string; askKid?: boolean };
 export type MyBook = { id: string; editToken?: string; title: string; kidName: string; createdAt: string };
 
 export class ApiError extends Error {
-  constructor(public status: number, message: string, public code?: string) { super(message); }
+  constructor(public status: number, message: string, public code?: string, public detail?: string) { super(message); }
 }
 const ANTHROPIC_HINTS: Record<string, string> = {
   anthropic_key_missing: "The Anthropic API key secret is not set on the Worker.",
@@ -16,6 +16,8 @@ const ANTHROPIC_HINTS: Record<string, string> = {
   anthropic_model_unavailable: "Anthropic doesn't know the model name set in wrangler.jsonc (or the key can't use it).",
   anthropic_bad_request: "Anthropic rejected the request itself. Check the Worker logs for the details.",
   anthropic_max_tokens: "The model ran out of room before finishing. Check the Worker logs.",
+  anthropic_busy: "Anthropic is rate-limiting or overloaded. Waiting a minute and pressing Try again usually works.",
+  drawing_rejected: "The model's drawing broke the drawing rules even after repair.",
 };
 const OWNER_HINT = " (Site owner: the Turnstile site key in wrangler.jsonc and the secret key set on the Worker must come from the same Turnstile widget.)";
 const FALLBACK = "The scissors got tangled. Shall we try that again?";
@@ -23,11 +25,11 @@ const FALLBACK = "The scissors got tangled. Shall we try that again?";
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   let res: Response;
   try { res = await fetch(path, init); } catch { throw new ApiError(0, "The portal is out of reach for a moment. Shall we try again?"); }
-  const body = (await res.json().catch(() => null)) as { error?: string; code?: string } | null;
+  const body = (await res.json().catch(() => null)) as { error?: string; code?: string; detail?: string } | null;
   if (!res.ok) {
     const setup = body?.code === "turnstile_rejected" || body?.code === "turnstile_misconfigured" || body?.code === "turnstile_unconfigured";
     const hint = body?.code ? ANTHROPIC_HINTS[body.code] : undefined;
-    throw new ApiError(res.status, (body?.error ?? FALLBACK) + (setup ? OWNER_HINT : "") + (hint ? ` (Site owner: ${hint})` : ""), body?.code);
+    throw new ApiError(res.status, (body?.error ?? FALLBACK) + (setup ? OWNER_HINT : "") + (hint ? ` (Site owner: ${hint}${body?.detail ? ` [${body.detail.slice(0, 160)}]` : ""})` : ""), body?.code, body?.detail);
   }
   return body as T;
 }

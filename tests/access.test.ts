@@ -9,7 +9,7 @@ beforeEach(() => vi.stubGlobal("fetch", async (_u: string, init: { body?: string
 }));
 afterEach(() => vi.unstubAllGlobals());
 
-const mkEnv = (over: Record<string, unknown> = {}) => ({ ANTHROPIC_API_KEY: "sk", TURNSTILE_ENABLED: "false", STUDIO_PASSWORD: "open-sesame", BOOKS: memoryKV(), ...over }) as never;
+const mkEnv = (over: Record<string, unknown> = {}) => ({ ANTHROPIC_API_KEY: "sk", ANTHROPIC_RETRY_MS: "0", TURNSTILE_ENABLED: "false", STUDIO_PASSWORD: "open-sesame", BOOKS: memoryKV(), ...over }) as never;
 const call = (env: never, method: string, path: string, body?: unknown, cookie?: string, ip = "1.1.1.1") =>
   app.fetch(new Request(`http://x${path}`, { method, body: body === undefined ? undefined : JSON.stringify(body), headers: { "content-type": "application/json", "cf-connecting-ip": ip, ...(cookie ? { cookie } : {}) } }), env);
 const login = async (env: never, password = "open-sesame") => call(env, "POST", "/api/access", { password });

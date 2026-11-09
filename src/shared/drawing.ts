@@ -69,6 +69,33 @@ export function validateDrawing(input: unknown, opts: { bounds?: Bounds; spriteI
   return errors.length ? { ok: false, errors } : { ok: true, drawing: parsed.data };
 }
 
+const ELEMENT_KEYS = new Map<string, string[]>(
+  elementSchema.options.map((o) => [String((o.shape.type as unknown as { value: string }).value), Object.keys(o.shape)]),
+);
+
+/**
+ * A drawing with a few bad elements is still a good drawing. Keeps every element that passes on its own (stripping keys the
+ * format doesn't have), drops the rest, and caps the total, so one stray coordinate or path command doesn't cost a whole page.
+ * Returns null when nothing usable is left.
+ */
+export function repairDrawing(input: unknown, opts: { bounds?: Bounds; spriteIds?: Set<string>; allowSprites?: boolean } = {}): { drawing: ParsedDrawing; dropped: number } | null {
+  const els = (input as { elements?: unknown } | null)?.elements;
+  if (!Array.isArray(els)) return null;
+  const keep: ParsedDrawing["elements"] = [];
+  let dropped = 0, highlights = 0;
+  for (const raw of els) {
+    const keys = raw && typeof raw === "object" ? ELEMENT_KEYS.get(String((raw as { type?: unknown }).type)) : undefined;
+    if (!keys) { dropped++; continue; }
+    const picked = Object.fromEntries(Object.entries(raw as object).filter(([k, v]) => keys.includes(k) && v !== null));
+    const one = validateDrawing({ viewBox: [800, 560], elements: [picked] }, opts);
+    if (!one.ok || (one.drawing.elements[0].type === "highlight" && highlights++ >= 1)) { dropped++; continue; }
+    keep.push(one.drawing.elements[0]);
+  }
+  if (!keep.length) return null;
+  dropped += Math.max(0, keep.length - MAX_ELEMENTS);
+  return { drawing: { viewBox: [800, 560], elements: keep.slice(0, MAX_ELEMENTS) }, dropped };
+}
+
 /** JSON Schema handed to the Messages API structured outputs. Kept loose on purpose; validateDrawing is the real gate. */
 const num = { type: "number" };
 const weight = { type: "integer", enum: [1, 2, 3] };

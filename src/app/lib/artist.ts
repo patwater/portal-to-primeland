@@ -2,7 +2,7 @@
 import type { Book, Drawing } from "./types";
 import { ApiError } from "./api";
 
-export type Progress = { done: number; total: number; failed: string[]; capped: boolean; running: boolean };
+export type Progress = { done: number; total: number; failed: string[]; capped: boolean; running: boolean; reason?: string };
 
 async function post<T>(path: string, token: string, body?: unknown): Promise<T> {
   const res = await fetch(path, { method: "POST", headers: { Authorization: `Bearer ${token}`, "content-type": "application/json" }, body: body ? JSON.stringify(body) : undefined });
@@ -32,6 +32,7 @@ export async function drawBook(book: Book, token: string, onBook: (b: Book) => v
     for (let i = 0; i < 2; i++) {
       try { return await f(); } catch (e) {
         if (e instanceof ApiError && e.status === 429) { prog.capped = true; return null; }
+        if (e instanceof ApiError) prog.reason = e.message;
         if (e instanceof ApiError && (e.status === 401 || e.status === 403 || e.status === 404)) { prog.capped = true; return null; }
       }
     }
@@ -43,7 +44,8 @@ export async function drawBook(book: Book, token: string, onBook: (b: Book) => v
     if (r) { cur = { ...cur, castDrawings: { ...cur.castDrawings, [id]: r.drawing } }; onBook(cur); } else prog.failed.push(id);
     prog.done++; tick();
   });
-  await pool(pageTodo, 3, async (id) => {
+  await pool(pageTodo, 2, // two at a time: three at once can trip a new account's rate limit
+     async (id) => {
     const r = prog.capped ? null : await attempt(() => post<{ drawing: Drawing }>(`/api/books/${book.id}/pages/${id}/art`, token));
     if (r) { cur = { ...cur, pages: cur.pages.map((p) => (p.id === id ? { ...p, art: { ...p.art, renderer: "rough", drawing: r.drawing } } : p)) }; onBook(cur); } else prog.failed.push(id);
     prog.done++; tick();

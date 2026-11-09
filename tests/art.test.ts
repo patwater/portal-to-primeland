@@ -4,11 +4,12 @@ import { anthropicReply, blocks, memoryKV, story } from "./fixtures";
 
 type Req = { url: string; body: string };
 let requests: Req[];
-let mode: "ok" | "bad-sprite" | "no-sprites" | "wide";
+let mode: "ok" | "bad-sprite" | "no-sprites" | "wide" | "junk";
 let calls = 0;
 
 const sheet = () => ({ viewBox: [800, 560], elements: [{ type: "ellipse", cx: 110, cy: 80, rx: 30, ry: 32 }, { type: "label", text: "Kid", x: 90, y: 295 }] });
 function pageDrawing(user: string) {
+  if (mode === "junk") return { viewBox: [800, 560], elements: [{ type: "path", d: "M 0 0 A 5 5 IGNORE <script>", weight: 2 }, { type: "wobble", x: 1 }] };
   const ids = [...user.matchAll(/^\{"id":"([^"]+)"/gm)].map((m) => m[1]);
   const sprites = mode === "no-sprites" ? [] : ids.map((id, i) => ({ type: "sprite", spriteId: id, x: 150 + i * 150, y: 450, scale: 1 }));
   if (mode === "bad-sprite" && calls <= 1) sprites.push({ type: "sprite", spriteId: "made-up", x: 10, y: 10, scale: 1 });
@@ -29,7 +30,7 @@ beforeEach(() => {
 });
 afterEach(() => vi.unstubAllGlobals());
 
-const mkEnv = (over: Record<string, unknown> = {}) => ({ ANTHROPIC_API_KEY: "sk", TURNSTILE_SECRET_KEY: "t", BOOKS: memoryKV(), ...over }) as never;
+const mkEnv = (over: Record<string, unknown> = {}) => ({ ANTHROPIC_API_KEY: "sk", ANTHROPIC_RETRY_MS: "0", TURNSTILE_SECRET_KEY: "t", BOOKS: memoryKV(), ...over }) as never;
 const call = (env: never, method: string, path: string, body?: unknown, token?: string) =>
   app.fetch(new Request(`http://x${path}`, { method, body: body ? JSON.stringify(body) : undefined, headers: { "content-type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) } }), env);
 async function newBook(env: never, over: Record<string, unknown> = {}) {
@@ -97,31 +98,52 @@ describe("page art", () => {
     expect(JSON.parse(artReqs().at(-1)!.body).messages[0].content).toContain("<undrawn>");
   });
 
-  it("retries once when the drawing breaks the rules, then succeeds", async () => {
-    mode = "bad-sprite";
+  it("keeps the good parts of a drawing that breaks a rule, instead of throwing the page away", async () => {
+    mode = "bad-sprite"; // the model adds a sprite that does not exist
     const env = mkEnv(); const b = await newBook(env);
     await cast(env, b.id, "zzyzx", b.editToken);
-    calls = 0;
     const res = await art(env, b.id, "p1", b.editToken);
     expect(res.status).toBe(200);
-    expect(artReqs().length).toBeGreaterThanOrEqual(3); // the cast sheet, the rejected page, the retry
-    expect(JSON.parse(artReqs().at(-1)!.body).messages[0].content).toMatch(/unknown spriteId "made-up"/);
+    const d = (await res.json()) as { drawing: { elements: { spriteId?: string }[] } };
+    expect(d.drawing.elements.some((e) => e.spriteId === "made-up")).toBe(false);   // the bad element is dropped
+    expect(d.drawing.elements.some((e) => e.spriteId === "cast:zzyzx")).toBe(true); // the rest survives
   });
 
-  it("fails kindly if a drawing never validates", async () => {
-    mode = "wide";
+  it("fails kindly, saying why, if nothing in a drawing is usable", async () => {
+    mode = "junk";
     const env = mkEnv(); const b = await newBook(env);
     const res = await art(env, b.id, "p1", b.editToken);
     expect(res.status).toBe(502);
-    expect(await res.text()).toContain("pencil snapped");
+    const j = (await res.json()) as { error: string; code: string; detail: string };
+    expect(j.error).toContain("pencil snapped");
+    expect(j.code).toBe("drawing_rejected");
+    expect(j.detail).toMatch(/^drawing rejected: /);
+    expect(j.detail).not.toMatch(/IGNORE|<script>/);   // the model's own words are reduced to a safe character set
   });
 
-  it("asks for the offered sprites when the model forgets them", async () => {
+  it("asks once for a forgotten sprite, then places it itself so the character is never missing", async () => {
     mode = "no-sprites";
     const env = mkEnv(); const b = await newBook(env);
     await cast(env, b.id, "zzyzx", b.editToken);
-    expect((await art(env, b.id, "p1", b.editToken)).status).toBe(502);
+    const before = artReqs().length;
+    const res = await art(env, b.id, "p1", b.editToken);
+    expect(res.status).toBe(200);
+    expect(artReqs().length - before).toBe(2);                                          // the draw and one retry
     expect(JSON.parse(artReqs().at(-1)!.body).messages[0].content).toMatch(/did not place these offered sprites: cast:zzyzx/);
+    const d = (await res.json()) as { drawing: { elements: { spriteId?: string; y?: number }[] } };
+    expect(d.drawing.elements.find((e) => e.spriteId === "cast:zzyzx")).toMatchObject({ y: 470 });
+  });
+
+  it("waits out a rate limit and tries again", async () => {
+    const env = mkEnv(); const b = await newBook(env);
+    let n = 0;
+    const inner = globalThis.fetch;
+    vi.stubGlobal("fetch", async (url: string, init: { body?: string }) => {
+      if (url.includes("anthropic") && !JSON.parse(String(init.body)).output_config.format.schema.properties.pages && n++ < 2) return new Response("{}", { status: 429, headers: { "retry-after": "0" } });
+      return inner(url, init as never);
+    });
+    expect((await art(env, b.id, "p1", b.editToken)).status).toBe(200);
+    expect(n).toBeGreaterThanOrEqual(3);
   });
 
   it("keeps the system blocks free of family details and the soul cached first", async () => {

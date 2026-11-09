@@ -29,7 +29,7 @@ beforeEach(() => {
 });
 afterEach(() => vi.unstubAllGlobals());
 
-const mkEnv = () => ({ ANTHROPIC_API_KEY: "sk", TURNSTILE_SECRET_KEY: "t", BOOKS: memoryKV() }) as never;
+const mkEnv = () => ({ ANTHROPIC_API_KEY: "sk", ANTHROPIC_RETRY_MS: "0", TURNSTILE_SECRET_KEY: "t", BOOKS: memoryKV() }) as never;
 const call = (env: never, method: string, path: string, body?: unknown, token?: string) =>
   app.fetch(new Request(`http://x${path}`, { method, body: body === undefined ? undefined : JSON.stringify(body), headers: { "content-type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) } }), env);
 async function newBook(env: never) {

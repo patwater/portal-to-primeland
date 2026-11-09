@@ -4,7 +4,7 @@ import { generateInterview } from "../src/worker/prompts/interviewer";
 import { generateStory } from "../src/worker/prompts/storyteller";
 import { anthropicReply, blocks, interview, story } from "./fixtures";
 
-const base = { env: { ANTHROPIC_API_KEY: "sk-secret" }, route: "t", model: "m", system: [], user: "u", schema: {}, maxTokens: 100 };
+const base = { env: { ANTHROPIC_API_KEY: "sk-secret", ANTHROPIC_RETRY_MS: "0" }, route: "t", model: "m", system: [], user: "u", schema: {}, maxTokens: 100 };
 const fail = async (res: Response | (() => Response)) => {
   const f = vi.fn(async () => (typeof res === "function" ? res() : res.clone()));
   try { await callClaude({ ...base, fetchImpl: f as never }); } catch (e) { return { e: e as FriendlyError, calls: f.mock.calls.length }; }
@@ -18,15 +18,15 @@ describe("why a Claude call failed", () => {
     [403, "permission_error", "anthropic_key_rejected", 1],
     [404, "not_found_error", "anthropic_model_unavailable", 1],
     [400, "invalid_request_error", "anthropic_bad_request", 1],
-    [529, "overloaded_error", "anthropic_busy", 2],
-    [429, "rate_limit_error", "anthropic_busy", 2],
+    [529, "overloaded_error", "anthropic_busy", 3],
+    [429, "rate_limit_error", "anthropic_busy", 3],
   ])("status %i gives %s a code the owner can act on", async (status, type, code, calls) => {
     const { e, calls: n } = await fail(() => apiError(status, type));
     expect(e.code).toBe(code);
     expect(e.message).toBe(`upstream status ${status} ${type}`);
     expect(e.userMessage).toContain("scissors got tangled");
     expect(e.message).not.toMatch(/secret detail|sk-secret|Zzyzx/); // only the error type ever leaves the API body
-    expect(n).toBe(calls);                                           // a 4xx is not retried, a 429 or 5xx is, once
+    expect(n).toBe(calls);                                           // a 4xx is not retried; a 429 or 5xx is, twice, after waiting
   });
 
   it("a missing key says so", async () => {

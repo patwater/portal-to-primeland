@@ -8,7 +8,7 @@ export class FriendlyError extends Error {
 }
 export const TANGLED = "The scissors got tangled. Shall we try that again?";
 
-export type ClaudeEnv = { ANTHROPIC_API_KEY?: string; ANTHROPIC_BASE_URL?: string };
+export type ClaudeEnv = { ANTHROPIC_API_KEY?: string; ANTHROPIC_BASE_URL?: string; ANTHROPIC_RETRY_MS?: string };
 export type CallOptions = {
   env: ClaudeEnv; route: string; model: string; system: SystemBlock[]; user: string;
   schema: unknown; maxTokens: number; timeoutMs?: number; fetchImpl?: typeof fetch;
@@ -32,7 +32,8 @@ export async function callClaude(o: CallOptions): Promise<unknown> {
   if (!o.env.ANTHROPIC_API_KEY) throw new FriendlyError(503, TANGLED, "ANTHROPIC_API_KEY is not set", "anthropic_key_missing");
   const f = o.fetchImpl ?? fetch;
   let lastStatus = 0, lastType = "";
-  for (let attempt = 0; attempt < 2; attempt++) {
+  const base = Number(o.env.ANTHROPIC_RETRY_MS ?? 1500);
+  for (let attempt = 0; attempt < 3; attempt++) {
     try {
       const res = await f(`${o.env.ANTHROPIC_BASE_URL ?? "https://api.anthropic.com"}/v1/messages`, {
         method: "POST",
@@ -47,7 +48,14 @@ export async function callClaude(o: CallOptions): Promise<unknown> {
         signal: AbortSignal.timeout(o.timeoutMs ?? 90_000),
       });
       lastStatus = res.status;
-      if (res.status === 429 || res.status >= 500) { lastType = await errorType(res); continue; }
+      if (res.status === 429 || res.status >= 500) {
+        lastType = await errorType(res);
+        // Rate limits and overload clear if we wait: honor Retry-After (capped), else back off a little longer each time.
+        const asked = Number(res.headers.get("retry-after"));
+        const wait = Math.min(20_000, Number.isFinite(asked) && res.headers.get("retry-after") ? asked * 1000 : base * (attempt + 1));
+        if (attempt < 2 && wait > 0) await new Promise((r) => setTimeout(r, wait));
+        continue;
+      }
       if (!res.ok) { lastType = await errorType(res); break; } // a 4xx will not get better by asking again
       const j = (await res.json()) as { content?: { type: string; text?: string }[]; usage?: Usage; stop_reason?: string };
       const u = j.usage ?? {};
@@ -59,7 +67,8 @@ export async function callClaude(o: CallOptions): Promise<unknown> {
       try { return JSON.parse(text); } catch { throw new FriendlyError(502, TANGLED, "unparseable response", "anthropic_bad_response"); }
     } catch (e) {
       if (e instanceof FriendlyError) throw e;
-      lastStatus = lastStatus || -1; // timeout or network error: try once more
+      lastStatus = lastStatus || -1; // timeout or network error: try once more, but not twice (each can take minutes)
+      if (attempt >= 1) break;
     }
   }
   console.log(JSON.stringify({ route: o.route, failed: true, status: lastStatus, type: lastType }));

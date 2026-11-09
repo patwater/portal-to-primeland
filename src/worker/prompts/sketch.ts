@@ -1,7 +1,7 @@
 // The Sketch Artist: one reusable cast sheet per new character, and one drawing per page (brief 7.4, 7.5, 9.4).
 import { assemble } from "./assemble";
 import { callClaude, FriendlyError, TANGLED, type ClaudeEnv } from "../claude";
-import { validateDrawing, drawingJsonSchema, type ParsedDrawing } from "../../shared/drawing";
+import { validateDrawing, repairDrawing, drawingJsonSchema, type ParsedDrawing } from "../../shared/drawing";
 import { offersForPage, SHEET, SPRITE_UNIT, type OfferInput, type SpriteOffer } from "../sprites";
 import { places } from "../world";
 
@@ -37,25 +37,45 @@ export function castSheetUser(c: { name: string; look: string; tier: string; bad
   return `${FORMAT}\n\n<task_detail>\nDraw ONE standing character for a cast sheet, centered, about ${SHEET.w} wide and ${SHEET.h} tall, on a sheet whose coordinates run from x 0 to ${SHEET.w} and y 0 to ${SHEET.h} (feet near y 290). Letter the name beneath the figure. No sprites. At most 60 elements.\nName: ${c.name}\nLook: ${c.look}${c.badge != null ? `\nPrime badge: ${c.badge}, drawn on the body as a small circled number.` : "\nNo badge."}\n</task_detail>`;
 }
 
-type Check = { bounds?: { w: number; h: number }; allowSprites: boolean; spriteIds?: Set<string>; mustPlace?: string[] };
+type Check = { bounds?: { w: number; h: number }; allowSprites: boolean; spriteIds?: Set<string>; mustPlace?: SpriteOffer[] };
+
+/** Short, safe-to-log reasons: the model's own words are reduced to a plain character set and a length. */
+const plain = (errs: string[]) => errs.slice(0, 3).map((e) => e.replace(/[^A-Za-z0-9 :.,()"'_-]/g, "").slice(0, 110));
+
+/** Puts any offered sprite the model left out onto the ground line, so a character never goes missing from a page. */
+function placeMissing(d: ParsedDrawing, missing: SpriteOffer[]): ParsedDrawing {
+  const extra = missing.map((o, i): ParsedDrawing["elements"][number] => ({ type: "sprite", spriteId: o.id, x: Math.min(700, 130 + i * 190), y: 470, scale: Math.max(0.3, Math.min(1.6, 210 / o.height)) }));
+  return { ...d, elements: [...d.elements, ...extra].slice(0, 70) };
+}
 
 async function drawWith(env: ArtEnv, route: string, user: string, check: Check, scene: string, fetchImpl?: typeof fetch): Promise<ParsedDrawing> {
   const system = assemble("sketch-artist");
+  const opts = { bounds: check.bounds, allowSprites: check.allowSprites, spriteIds: check.spriteIds };
   let msg = user;
-  let last: string[] = [];
+  let reasons: string[] = [];
+  let leftOut: SpriteOffer[] = [];
+  let best: ParsedDrawing | null = null;
   for (let attempt = 0; attempt < 2; attempt++) {
     const raw = await callClaude({ env, route: attempt ? `${route}-retry` : route, model: env.MODEL_ART ?? "claude-sonnet-5-5", system, user: msg, schema: drawingJsonSchema, maxTokens: 12000, effort: "low", timeoutMs: 120_000, fetchImpl });
-    const v = validateDrawing(raw, { bounds: check.bounds, allowSprites: check.allowSprites, spriteIds: check.spriteIds });
+    let v = validateDrawing(raw, opts);
+    if (!v.ok) {
+      reasons = plain(v.errors);
+      // Keep what is good and drop what is not, rather than throwing the whole page away.
+      const fixed = repairDrawing(raw, opts);
+      if (fixed) { console.log(JSON.stringify({ route, repaired: true, dropped: fixed.dropped, reasons })); v = { ok: true, drawing: fixed.drawing }; }
+    }
     if (v.ok) {
+      best = v.drawing;
       const placed = new Set(v.drawing.elements.flatMap((e) => (e.type === "sprite" ? [e.spriteId] : [])));
-      const missing = (check.mustPlace ?? []).filter((id) => !placed.has(id));
-      if (!missing.length) return v.drawing;
-      last = [`you did not place these offered sprites: ${missing.join(", ")}`];
-    } else last = v.errors;
-    msg = `${user}\n\n<fix>Your last drawing of ${scene} was rejected: ${last.slice(0, 5).join("; ")}. Draw it again within the rules.</fix>`;
+      leftOut = (check.mustPlace ?? []).filter((o) => !placed.has(o.id));
+      if (!leftOut.length) return v.drawing;
+      reasons = [`you did not place these offered sprites: ${leftOut.map((o) => o.id).join(", ")}`];
+    }
+    msg = `${user}\n\n<fix>Your last drawing of ${scene} had problems: ${reasons.join("; ")}. Draw it again within the rules.</fix>`;
   }
-  console.log(JSON.stringify({ route, rejected: last.length }));
-  throw new FriendlyError(502, "The pencil snapped. Shall we try that page again?", `drawing failed checks`);
+  if (best) { console.log(JSON.stringify({ route, autoPlaced: leftOut.length })); return placeMissing(best, leftOut); }
+  console.log(JSON.stringify({ route, rejected: true, reasons }));
+  throw new FriendlyError(502, "The pencil snapped. Shall we try that page again?", `drawing rejected: ${reasons.join("; ")}`, "drawing_rejected");
 }
 
 export function drawCastSheet(env: ArtEnv, c: { name: string; look: string; tier: string; badge: number | null }, fetchImpl?: typeof fetch) {
@@ -64,5 +84,5 @@ export function drawCastSheet(env: ArtEnv, c: { name: string; look: string; tier
 
 export function drawPage(env: ArtEnv, i: PageArtInput & { allowed: Set<string> }, fetchImpl?: typeof fetch) {
   const { user, offers } = pageArtUser(i);
-  return drawWith(env, "page-art", user, { allowSprites: true, spriteIds: i.allowed, mustPlace: offers.filter((o) => o.for).map((o) => o.id) }, `page ${i.n}`, fetchImpl);
+  return drawWith(env, "page-art", user, { allowSprites: true, spriteIds: i.allowed, mustPlace: offers.filter((o) => o.for) }, `page ${i.n}`, fetchImpl);
 }

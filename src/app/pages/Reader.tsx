@@ -175,7 +175,7 @@ export function Reader({ book, progress, onRetry, editor, startAtNext }: { book:
             ? `Drawing… ${progress.done} of ${progress.total} done. You can start reading.`
             : progress.capped
               ? "The Sketch Artist has put his pencils down for now."
-              : `${progress.failed.length} drawing${progress.failed.length === 1 ? "" : "s"} didn't come out.`}
+              : `${progress.failed.length} drawing${progress.failed.length === 1 ? "" : "s"} didn't come out.${progress.reason ? ` ${progress.reason.replace(/^[^(]*/, "")}` : ""}`}
           {!progress.running && onRetry && <> <button className="linkish" onClick={onRetry}>Try again</button></>}
         </p>
       )}
