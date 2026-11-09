@@ -8,7 +8,7 @@ const t400 = clean(400).default("");
 /** The family's blocks as the client sends them. Every free-text field is capped and stripped of control characters. */
 export const blocksSchema = z.object({
   name: clean(60).refine((s) => s.length > 0, "name is required"),
-  nickname: t200, pronouns: z.enum(["she", "he", "they"]).default("they"),
+  nickname: t200,
   age: z.number().int().min(2).max(8).default(4),
   look: t200, shout: t200, count: t200,
   loves: z.array(t200).max(3).default([]), giggle: t200,

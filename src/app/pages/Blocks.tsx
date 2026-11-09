@@ -109,9 +109,6 @@ export function Blocks() {
             <input type="text" required placeholder="Your kid's name…" {...text("name")} aria-invalid={tried && missing} />
           </Field>
           <Field label="What they call themselves" note="used in dialogue, like “baby T”"><input type="text" {...text("nickname")} /></Field>
-          <div className="field"><span className="field__label">Pronouns</span>
-            <Choice name="pronouns" value={b.pronouns} onChange={(v) => set("pronouns", v)} options={[{ id: "she", name: "she" }, { id: "he", name: "he" }, { id: "they", name: "they" }]} />
-          </div>
           <Field label={`Age: ${b.age}`} note="age drives page length, vocabulary, and how much math shows">
             <input type="range" min={2} max={8} value={b.age} onChange={(e) => set("age", Number(e.target.value))} />
           </Field>
@@ -198,7 +195,7 @@ export function Blocks() {
 
         <Page seed="pgH" title="H. The book itself">
           <Field label="Title"><input type="text" {...text("title")} /></Field>
-          <Field label="Dedication"><input type="text" placeholder={`For ${kid}, my lil' …`} {...text("dedication")} /></Field>
+          <Field label="Dedication"><input type="text" placeholder={`For ${kid}, my little …`} {...text("dedication")} /></Field>
           <Field label="Byline"><input type="text" placeholder={`by a grown-up & ${kid}`} {...text("byline")} /></Field>
           <p className="field__label">Paper for the text pages</p>
           <Choice name="paper" value={b.paper} onChange={(v) => set("paper", v)} options={[{ id: "lined", name: "lined notebook" }, { id: "dots", name: "dot grid" }, { id: "grid", name: "square grid" }]} />

@@ -8,15 +8,19 @@ export type Answer = { id: string; text: string; askKid?: boolean };
 export type MyBook = { id: string; editToken?: string; title: string; kidName: string; createdAt: string };
 
 export class ApiError extends Error {
-  constructor(public status: number, message: string) { super(message); }
+  constructor(public status: number, message: string, public code?: string) { super(message); }
 }
+const OWNER_HINT = " (Site owner: the Turnstile site key in wrangler.jsonc and the secret key set on the Worker must come from the same Turnstile widget.)";
 const FALLBACK = "The scissors got tangled. Shall we try that again?";
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   let res: Response;
   try { res = await fetch(path, init); } catch { throw new ApiError(0, "The portal is out of reach for a moment. Shall we try again?"); }
-  const body = (await res.json().catch(() => null)) as { error?: string } | null;
-  if (!res.ok) throw new ApiError(res.status, body?.error ?? FALLBACK);
+  const body = (await res.json().catch(() => null)) as { error?: string; code?: string } | null;
+  if (!res.ok) {
+    const setup = body?.code === "turnstile_rejected" || body?.code === "turnstile_misconfigured" || body?.code === "turnstile_unconfigured";
+    throw new ApiError(res.status, (body?.error ?? FALLBACK) + (setup ? OWNER_HINT : ""), body?.code);
+  }
   return body as T;
 }
 const json = (body: unknown): RequestInit => ({ method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });

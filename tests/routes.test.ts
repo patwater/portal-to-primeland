@@ -91,7 +91,25 @@ describe("POST /api/books", () => {
     expect(res.status).toBe(403);
     expect(anthropicCalls()).toHaveLength(0);
     expect((await create(mkEnv(), { turnstileToken: undefined })).status).toBe(403);
-    expect((await create(mkEnv({ TURNSTILE_SECRET_KEY: undefined }))).status).toBe(403);
+    const unset = await create(mkEnv({ TURNSTILE_SECRET_KEY: undefined }));
+    expect(unset.status).toBe(503);
+    expect(((await unset.json()) as { code: string }).code).toBe("turnstile_unconfigured");
+  });
+
+  it("says why when Cloudflare rejects the token, and logs only Cloudflare's error codes", async () => {
+    const log = vi.spyOn(console, "log").mockImplementation(() => {});
+    vi.stubGlobal("fetch", async () => new Response(JSON.stringify({ success: false, "error-codes": ["invalid-input-response"] })));
+    const res = await create(mkEnv());
+    const j = (await res.json()) as { code: string; detail: string[]; error: string };
+    const logged = log.mock.calls.map((c) => c.join(" ")).join("\n");
+    log.mockRestore();
+    expect(res.status).toBe(403);
+    expect(j.code).toBe("turnstile_rejected");
+    expect(j.detail).toEqual(["invalid-input-response"]);
+    expect(logged).toContain("invalid-input-response");
+    expect(logged).not.toMatch(/Zzyzx|sk-secret|"tok"/);
+    vi.stubGlobal("fetch", async () => new Response(JSON.stringify({ success: false, "error-codes": ["invalid-input-secret"] })));
+    expect(((await (await create(mkEnv())).json()) as { code: string }).code).toBe("turnstile_misconfigured");
   });
 
   it("stops at the daily budget", async () => {

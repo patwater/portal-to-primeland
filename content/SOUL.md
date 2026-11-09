@@ -1,6 +1,6 @@
 # SOUL.md: A Portal to Primeland
 
-*Version 1.1 · November 9, 2026 · distilled from Patrick Atwater's notebooks, and integrated with `characters.md` and `locations.md`*
+*Version 1.2 · November 9, 2026 · distilled from Patrick Atwater's notebooks, and integrated with `characters.md` and `locations.md`*
 
 ## How to use this file
 
@@ -18,11 +18,11 @@ Two companion files hold the specifics. `characters.md` is the roster of 38 trav
 
 ### Where this comes from
 
-A dad wrote this for his daughter, his "lil' mailer," the girl he always said they'd put in a package and mail somewhere. It began as a bedtime story written by hand on lined paper. It grew through margin sketches and pages of grid-paper notes into a whole country of numbers.
+A dad wrote this for his daughter, his "little wailer," the girl he always said he would put in a package and mail somewhere. So he went ahead and mailed her, through a box on a hill. It began as a bedtime story written by hand on lined paper. It grew through margin sketches and pages of grid-paper notes into a whole country of numbers.
 
 The author works on water, data, and the protocols that let public institutions run. Primeland is what those concerns look like when they are explained to a toddler. It has a sorting system that is very proud of itself, a network that must stay fully connected, and a seal of approval that has never met anything it could not stamp. It also has a small kid who does not fit any of it and who turns out to be exactly the help everyone needed.
 
-Underneath the jokes sits an older question the author carries with him: what will we build that lasts, and how do we act as stewards for the kids who come after us? The book never asks that question out loud. It shows a small person being trusted to help repair something larger than herself, and it lets that be enough.
+Underneath the jokes sits an older question the author carries with him: what will we build that lasts, and how do we act as stewards for the kids who come after us? The book never asks that question out loud. It shows a small person being trusted to help repair something much larger than a small person, and it lets that be enough.
 
 ### The canon so far
 
@@ -110,7 +110,7 @@ The book lives in delight, curiosity, and wonder, with mild nerves (Scout), fuss
 
 **The narrator** is warm, wry, and fully on the kid's side. It enjoys words for their own sake and is fond of every character, including the fussy ones.
 
-**The traveler** speaks in short, physical, delighted bursts and makes declarations ("We do," said Taylor confidently), sometimes in a single word. The traveler ignores "why" questions in favor of doing, is occasionally coolly polite to pompous grown-ups, and asks the plain question everyone else skipped. Use the pronouns the family gave.
+**The traveler** speaks in short, physical, delighted bursts and makes declarations ("We do," said Taylor confidently), sometimes in a single word. The traveler ignores "why" questions in favor of doing, is occasionally coolly polite to pompous grown-ups, and asks the plain question everyone else skipped. The family gives no pronouns, so refer to the traveler by name, nickname, or "the tot," and write around he and she.
 
 **The companion** mostly speaks through body language. In the first draft, Scout's barks are translated by his smartwatch into worried questions ("Woof?" becomes "Are we sure about this?"). Every companion picks up some gadget or quirk in the portal the way Scout picked up his watch, and it gives the companion a small voice of its own.
 
@@ -178,7 +178,8 @@ They are not glossy cartoons with big shiny eyes, gradients, colored fills, drop
 | **The cube** | The big blue nylon delivery cube whose bottom becomes the portal. |
 | **Count** | What the scissors ask every arrival for ("What's your count?"). Numbers answer with numbers. Kids answer however they like. |
 | **Gray** | The tot's answer to the scissors in the draft. It stands for the in-between, neither yes nor no. |
-| **Lil' mailer** | The dedication's nickname for the kid who could be put in a package and mailed. |
+| **A pair** | Two of anything, and 2 is prime. A pair of scissors cannot be cut into smaller pieces without ceasing to be scissors, so Chris and Steve are indivisible. Each blade alone is a 1. |
+| **Little wailer** | The dedication's nickname for the kid who got put in a package and mailed, by way of a box on a hill. |
 | **The Long and Lonesome Hill** | Where the cube is left, under the hot summer sky, on our side of the box. A family's edition may move the cube to its own porch or park. |
 | **Neither stamped nor rejected** | The condition of the blip in N2, and the central mystery. |
 | **Proper protocols** | What the scissors are always shouting about. |
@@ -249,7 +250,7 @@ This is the single list of open threads for the whole world. The companion files
 - **Xavi and Wendell both see into things.** Keep their jobs distinct if both turn up at N2. Xavi sees *inside* something, down to the primes it is built from. Wendell sees *across*, into another sector.
 - **Lou the Loser.** The author worries the word can sting when read aloud to small children. For ages 2 to 5, write "Lou the Runner-Up." For older readers, either name is fine.
 - **The Platypus as royalty.** The early notes imagine a single platypus who drifted on a ship across the Sea of Knowledge from the Continent of Categories, possibly a pretender prince or the one true prince of Primeland. The locations file has a whole population at the Platypus Flats and an "Invasion of the Platypus." An edition may feature one platypus or many, and should leave the question of royalty open.
-- **The scissors and the Adding Machine.** They have not spoken in years. Their making up, with sums and cuts as two true ways of seeing the same numbers, is a strong candidate for a final beat.
+- **The scissors and the Adding Machine.** They have not spoken in years. Their making up, with sums and cuts as two true ways of seeing the same numbers, is a strong candidate for a final beat. One way in: a pair of scissors is a 2, and 2 is prime, so nothing can cut Chris and Steve down any further, which is why nobody ever asks who cuts the cutters. But each blade, on its own, is a 1, the Adding Machine's badge. The cousins are secretly made of exactly what the Adding Machine counts. The traveler, who asks the plain question, can be the one to ask it ("How do you get cut?"), and the answer can be the first thing the two sides have said to each other in years.
 - **The thingamajig's name.** It is still unnamed. The draft labels it with letters that might be a brand or an unfinished word, so editions should call it the thingamajig or use the family's own name for it. Sal's stall at the Alphabet Bazaar is where more of them turn up.
 - **The traveler's age.** Page 1 of the draft says "Taylor turns two," and Taylor is older now. Editions always use the age the family gives.
 - **A blank traveler card.** The author imagined a card each family fills in with its kid's name, outfit, first word, companion, and answer to the scissors. On the microsite, the blocks form is that card.

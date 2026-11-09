@@ -13,7 +13,7 @@ export function Landing() {
   return (
     <section className="landing paper paper--dots">
       <div className="landing__cover">
-        <p className="margin-note">notebook no. 1, “for my lil’ mailer”</p>
+        <p className="margin-note">notebook no. 1, “for my little wailer”</p>
         <h1 className="display">
           A Portal to <span className="hl">Primeland</span>
         </h1>

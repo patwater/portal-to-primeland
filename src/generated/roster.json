@@ -5,7 +5,7 @@
     "name": "Taylor",
     "badge": null,
     "look": "a tiny tot in a dotted outfit and Crocs, always mid-run.",
-    "background": "Taylor is the lil' mailer, the girl her dad always said they'd put in a package and mail somewhere. She runs up the hill with the verve and vigor of a tall ship sailor, and she has no time for why, where, or to what end. She sees a box where Brock saw packaging, and that difference is her whole superpower. In Primeland she is the only one who does not already have a number, so she is the only one who can say \"Gray!\" and mean it.",
+    "background": "Taylor is the little wailer, the girl her dad always said he would put in a package and mail somewhere, and then went ahead and mailed. She runs up the hill with the verve and vigor of a tall ship sailor, and she has no time for why, where, or to what end. She sees a box where Brock saw packaging, and that difference is her whole superpower. In Primeland she is the only one who does not already have a number, so she is the only one who can say \"Gray!\" and mean it.",
     "says": "\"Box!\"",
     "hook": "Primeland runs on yes or no, approved or rejected. Taylor is comfortable in the in-between, which is exactly where the trouble in sector N2 lives.",
     "spriteId": "tot-polka-dot"
@@ -53,9 +53,9 @@
     "badge": null,
     "badgeNote": "they hand out badges rather than wearing them",
     "look": "a single pair of scissors with a face on each blade.",
-    "background": "Chris and Steve are cousins and the gatekeepers of Primeland. Steve cuts corners and Chris cuts slack, and the scissors promise you'll need both. They keep the Scissor Gate, just past the bubble-wrap landing. Their job is to cut every number down until it cannot be divided any further, because only then is it allowed into Primeland. They take the rules very seriously, or at least one of them does.",
+    "background": "Chris and Steve are cousins and the gatekeepers of Primeland. Steve cuts corners and Chris cuts slack, and the scissors promise you'll need both. They keep the Scissor Gate, just past the bubble-wrap landing. Their job is to cut every number down until it cannot be divided any further, because only then is it allowed into Primeland. They take the rules very seriously, or at least one of them does.\n\nThe grown-up joke is the question nobody asks: who cuts the cutters? A pair of scissors is two, and two is prime, so there is nothing to cut them down into. They are indivisible, and they are quietly proud of it. But each blade by itself is a one, the Adding Machine's badge, so the cousins are made of exactly what the Adding Machine counts. They have never said so out loud.",
     "says": "\"What's your count?\"",
-    "hook": "In the first draft, Taylor pokes them in the center spot, says \"Gray!\", and runs off. Every traveler answers \"What's your count?\" in their own way. They are still shouting about proper protocols when she disappears down the path.",
+    "hook": "In the first draft, Taylor pokes them in the center spot, says \"Gray!\", and runs off. Every traveler answers \"What's your count?\" in their own way. They are still shouting about proper protocols when she disappears down the path. A traveler who asks the scissors \"How do you get cut?\" gets a long, fussy, flustered answer ending in \"We are a pair. A pair is two. Two is prime. Nobody cuts us,\" and a very small silence where one blade looks at the other.",
     "spriteId": "scissors-chris-steve"
   },
   {

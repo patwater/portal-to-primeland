@@ -58,19 +58,41 @@ async function limited(c: { env: Bindings; req: { header(n: string): string | un
   return !(await c.env.GEN_LIMITER.limit({ key: ip(c) })).success;
 }
 
-async function turnstileOk(env: Bindings, token: string | undefined, remoteIp: string, fetchImpl: typeof fetch = fetch): Promise<boolean> {
-  if (!env.TURNSTILE_SECRET_KEY || !token) return false;
+type TurnstileResult = { ok: true } | { ok: false; status: 403 | 503; code: string; codes: string[] };
+
+/** Checks the browser's one-time token with Cloudflare. Failures say why in a machine code and log Cloudflare's own error codes (no token, no secret). */
+async function turnstileCheck(env: Bindings, token: string | undefined, remoteIp: string, fetchImpl: typeof fetch = fetch): Promise<TurnstileResult> {
+  if (!env.TURNSTILE_SECRET_KEY) { console.log(JSON.stringify({ route: "turnstile", problem: "TURNSTILE_SECRET_KEY is not set" })); return { ok: false, status: 503, code: "turnstile_unconfigured", codes: [] }; }
+  if (!token) return { ok: false, status: 403, code: "turnstile_missing", codes: [] };
   try {
     const r = await fetchImpl(env.TURNSTILE_VERIFY_URL ?? "https://challenges.cloudflare.com/turnstile/v0/siteverify", {
       method: "POST", headers: { "content-type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({ secret: env.TURNSTILE_SECRET_KEY, response: token, remoteip: remoteIp }),
     });
-    return ((await r.json()) as { success?: boolean }).success === true;
-  } catch { return false; }
+    const j = (await r.json()) as { success?: boolean; "error-codes"?: string[] };
+    if (j.success === true) return { ok: true };
+    const codes = (j["error-codes"] ?? []).filter((c) => /^[a-z-]{3,40}$/.test(c));
+    console.log(JSON.stringify({ route: "turnstile", rejected: true, codes }));
+    // A secret that Cloudflare doesn't recognise is a setup problem; a bad token usually means the site key and secret are from different widgets.
+    return { ok: false, status: 403, code: codes.some((c) => c.includes("secret")) ? "turnstile_misconfigured" : "turnstile_rejected", codes };
+  } catch {
+    console.log(JSON.stringify({ route: "turnstile", problem: "siteverify unreachable" }));
+    return { ok: false, status: 503, code: "turnstile_unreachable", codes: [] };
+  }
 }
 
+const TURNSTILE_MESSAGE: Record<string, string> = {
+  turnstile_unconfigured: "The doorman isn't set up yet, so no new books can be made right now.",
+  turnstile_unreachable: "The doorman couldn't be reached. Please try again in a moment.",
+};
+const turnstileFail = (c: { json(b: unknown, s?: number): Response }, t: Extract<TurnstileResult, { ok: false }>) =>
+  c.json({ error: TURNSTILE_MESSAGE[t.code] ?? "The doorman wasn't sure you were a grown-up. Please try the check again.", code: t.code, detail: t.codes }, t.status);
+
 const friendly = (c: { json(b: unknown, s?: number): Response }, e: unknown) => {
-  if (e instanceof FriendlyError) return c.json({ error: e.userMessage }, e.status as 400);
+  if (e instanceof FriendlyError) {
+    console.log(JSON.stringify({ route: "error", status: e.status, detail: e.message })); // details are fixed strings written in claude.ts and the checks, never family text
+    return c.json({ error: e.userMessage }, e.status as 400);
+  }
   console.log(JSON.stringify({ route: "error", kind: (e as Error)?.name ?? "unknown" })); // never the message: it could hold a name
   return c.json({ error: TANGLED }, 500);
 };
@@ -92,7 +114,8 @@ app.post("/api/books", async (c) => {
     const blocks = blocksSchema.safeParse(body?.blocks);
     const answers = answersSchema.safeParse(body?.answers ?? []);
     if (!blocks.success || !answers.success) return c.json({ error: "The Delivery Man needs at least a name for the label." }, 400);
-    if (!(await turnstileOk(c.env, body?.turnstileToken, ip(c)))) return c.json({ error: "The doorman wasn't sure you were a grown-up. Please try the check again." }, 403);
+    const ts = await turnstileCheck(c.env, body?.turnstileToken, ip(c));
+    if (!ts.ok) return turnstileFail(c, ts);
     if (!(await takeBudget(c.env))) return c.json({ error: "The Delivery Man has run out of boxes for today. Please come back tomorrow." }, 429);
 
     const story = await generateStory(c.env, blocks.data, answers.data);
@@ -223,7 +246,8 @@ app.post("/api/books/:id/revise", async (c) => {
     const feedback = body?.feedback ? clampFeedback(body.feedback, new Set(book.pages.map((p) => p.id))) : await getFeedback(c.env, id, book.version);
     if (!feedback) return c.json({ error: "That feedback didn't make sense to the scissors." }, 400);
     if (!hasRequests(feedback)) return c.json({ error: "Tell us how the reading went first: a note, a stamp, or something they said." }, 422);
-    if (!(await turnstileOk(c.env, body?.turnstileToken, ip(c)))) return c.json({ error: "The doorman wasn't sure you were a grown-up. Please try the check again." }, 403);
+    const ts = await turnstileCheck(c.env, body?.turnstileToken, ip(c));
+    if (!ts.ok) return turnstileFail(c, ts);
     if (!(await takeBudget(c.env))) return c.json({ error: "The Delivery Man has run out of boxes for today. Please come back tomorrow." }, 429);
     await saveFeedback(c.env, id, book.version, feedback);
 
