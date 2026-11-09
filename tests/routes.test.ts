@@ -112,6 +112,26 @@ describe("POST /api/books", () => {
     expect(((await (await create(mkEnv())).json()) as { code: string }).code).toBe("turnstile_misconfigured");
   });
 
+  it("skips Turnstile when TURNSTILE_ENABLED is false, but keeps the budget and rate limit", async () => {
+    turnstile = false;
+    const env = mkEnv({ TURNSTILE_ENABLED: "false", TURNSTILE_SECRET_KEY: undefined, DAILY_BOOK_BUDGET: "1" });
+    expect((await create(env, { turnstileToken: undefined })).status).toBe(200);
+    expect(requests.some((r) => r.url.includes("challenges.cloudflare.com"))).toBe(false);
+    expect((await create(env, { turnstileToken: undefined })).status).toBe(429);        // the daily budget still applies
+    const limiter = { limit: async () => ({ success: false }) };
+    expect((await create(mkEnv({ TURNSTILE_ENABLED: "false", GEN_LIMITER: limiter }), { turnstileToken: undefined })).status).toBe(429);
+  });
+
+  it("reports the switch to the client, and any value but \"false\" leaves the check on", async () => {
+    const cfg = async (v?: string) => (await (await app.fetch(new Request("http://x/api/config"), mkEnv({ TURNSTILE_ENABLED: v }))).json()) as { turnstileEnabled: boolean };
+    expect((await cfg("false")).turnstileEnabled).toBe(false);
+    expect((await cfg()).turnstileEnabled).toBe(true);
+    expect((await cfg("true")).turnstileEnabled).toBe(true);
+    expect((await cfg("0")).turnstileEnabled).toBe(true);
+    turnstile = false;
+    expect((await create(mkEnv({ TURNSTILE_ENABLED: "no" }))).status).toBe(403);
+  });
+
   it("stops at the daily budget", async () => {
     const env = mkEnv({ DAILY_BOOK_BUDGET: "2" });
     expect((await create(env)).status).toBe(200);
@@ -168,6 +188,6 @@ describe("misc routes", () => {
   });
   it("exposes only the public Turnstile site key", async () => {
     const res = await app.fetch(new Request("http://x/api/config"), mkEnv({ TURNSTILE_SITE_KEY: "pub" }));
-    expect(await res.json()).toEqual({ turnstileSiteKey: "pub" });
+    expect(await res.json()).toEqual({ turnstileSiteKey: "pub", turnstileEnabled: true });
   });
 });

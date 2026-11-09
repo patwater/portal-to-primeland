@@ -20,12 +20,14 @@ export function Turnstile({ onToken, resetKey = 0 }: { onToken: (t: string | nul
   const box = useRef<HTMLDivElement>(null);
   const id = useRef<string | undefined>(undefined);
   const [failed, setFailed] = useState(false);
+  const [off, setOff] = useState(false);
 
   useEffect(() => {
     let dead = false;
     (async () => {
       try {
-        const { turnstileSiteKey } = await getConfig();
+        const { turnstileSiteKey, turnstileEnabled } = await getConfig();
+        if (!turnstileEnabled) { setOff(true); onToken("turnstile-off"); return; } // the server is not checking, so there is nothing to solve
         await loadScript();
         if (dead || !box.current || !window.turnstile) return;
         id.current = window.turnstile.render(box.current, {
@@ -39,6 +41,7 @@ export function Turnstile({ onToken, resetKey = 0 }: { onToken: (t: string | nul
   }, []);
   useEffect(() => { if (resetKey && id.current) { onToken(null); try { window.turnstile?.reset(id.current); } catch { /* ignore */ } } }, [resetKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  if (off) return null;
   return (
     <div>
       <div ref={box} aria-label="Quick check that you are a grown-up" />

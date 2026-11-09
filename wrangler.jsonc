@@ -15,6 +15,8 @@
     "MODEL_ART": "claude-sonnet-5-5",
     "MODEL_INTERVIEW": "claude-haiku-5-5",
     "DAILY_BOOK_BUDGET": "200",
+    // "false" turns the Turnstile check off (the rate limit and daily budget still apply). Remove the line or set "true" to turn it back on.
+    "TURNSTILE_ENABLED": "false",
     "TURNSTILE_SITE_KEY": "42",
     "BOOK_TTL_DAYS": "400"
   }

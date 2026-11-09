@@ -12,7 +12,7 @@ import { drawCastSheet, drawPage, type ArtEnv } from "./prompts/sketch";
 import { allowedSpriteIds } from "./sprites";
 
 export type Bindings = InterviewEnv & StoryEnv & ArtEnv & StorageEnv & {
-  STUDIO_PASSWORD?: string; TURNSTILE_SECRET_KEY?: string; TURNSTILE_SITE_KEY?: string; TURNSTILE_VERIFY_URL?: string;
+  STUDIO_PASSWORD?: string; TURNSTILE_SECRET_KEY?: string; TURNSTILE_SITE_KEY?: string; TURNSTILE_VERIFY_URL?: string; TURNSTILE_ENABLED?: string;
   GEN_LIMITER?: { limit(o: { key: string }): Promise<{ success: boolean }> };
 };
 const app = new Hono<{ Bindings: Bindings }>();
@@ -35,7 +35,9 @@ app.use("/api/*", async (c, next) => {
 app.get("/api/health", (c) =>
   c.json({ commit: version.commit, builtAt: version.builtAt, hashes: { soul: version.soul, characters: version.characters, locations: version.locations } }),
 );
-app.get("/api/config", (c) => c.json({ turnstileSiteKey: c.env.TURNSTILE_SITE_KEY ?? "" }));
+/** The check is on unless TURNSTILE_ENABLED is exactly "false". The rate limit and the daily book budget apply either way. */
+const turnstileOn = (env: Bindings) => env.TURNSTILE_ENABLED !== "false";
+app.get("/api/config", (c) => c.json({ turnstileSiteKey: c.env.TURNSTILE_SITE_KEY ?? "", turnstileEnabled: turnstileOn(c.env) }));
 
 /** Constant-time string comparison so the studio password can't be guessed by timing. */
 function same(a: string, b: string): boolean {
@@ -62,6 +64,7 @@ type TurnstileResult = { ok: true } | { ok: false; status: 403 | 503; code: stri
 
 /** Checks the browser's one-time token with Cloudflare. Failures say why in a machine code and log Cloudflare's own error codes (no token, no secret). */
 async function turnstileCheck(env: Bindings, token: string | undefined, remoteIp: string, fetchImpl: typeof fetch = fetch): Promise<TurnstileResult> {
+  if (!turnstileOn(env)) return { ok: true };
   if (!env.TURNSTILE_SECRET_KEY) { console.log(JSON.stringify({ route: "turnstile", problem: "TURNSTILE_SECRET_KEY is not set" })); return { ok: false, status: 503, code: "turnstile_unconfigured", codes: [] }; }
   if (!token) return { ok: false, status: 403, code: "turnstile_missing", codes: [] };
   try {
