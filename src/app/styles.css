@@ -205,3 +205,5 @@ input[type="range"] { width: 100%; accent-color: var(--ink); min-height: 44px; }
 @media (prefers-reduced-motion: reduce) { .ticker__msg { animation: none; } }
 .art-pending { width: 100%; padding: 24px; text-align: center; }
 .art-pending__brief { font-family: var(--note); font-size: 22px; color: var(--ink-soft); }
+
+.reader__progress { text-align: center; padding: 4px 8px; }

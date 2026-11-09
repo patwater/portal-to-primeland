@@ -1,10 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { hashSeed, renderDrawing, textSize, type Rendered } from "../lib/rough";
 import type { Drawing } from "../lib/types";
 import { useIndex, type SpriteInfo } from "../lib/world";
 
 /** Rendered size of a sprite: pixels of the transparent PNG times this, times the element's `scale`. */
 export const SPRITE_UNIT = 0.4;
+/** Cast sheets drawn for the book being read, keyed by cast id. Sprites named "cast:<id>" resolve here. */
+export const CastContext = createContext<Record<string, Drawing>>({});
 const sheetCache = new Map<string, Promise<Drawing | null>>();
 function loadSheet(id: string): Promise<Drawing | null> {
   if (!sheetCache.has(id)) sheetCache.set(id, fetch(`/sketches/roster/${id}.json`).then((r) => (r.ok ? (r.json() as Promise<Drawing>) : null)).catch(() => null));
@@ -49,7 +51,9 @@ function Items({ items }: { items: Rendered[] }) {
 
 function Sprite({ el, info, sheetKind }: { el: Extract<Rendered, { kind: "sprite" }>["el"]; info?: SpriteInfo; sheetKind?: "json" | "png" }) {
   const [sheet, setSheet] = useState<Drawing | null>(null);
-  const useJson = !info && sheetKind === "json";
+  const cast = useContext(CastContext);
+  const castSheet = el.spriteId.startsWith("cast:") ? cast[el.spriteId.slice(5)] : undefined;
+  const useJson = !info && !castSheet && sheetKind === "json";
   useEffect(() => {
     if (useJson) loadSheet(el.spriteId).then(setSheet);
   }, [useJson, el.spriteId]);
@@ -61,9 +65,10 @@ function Sprite({ el, info, sheetKind }: { el: Extract<Rendered, { kind: "sprite
   }
   if (sheetKind === "png") {
     const k = el.scale;
-    return <image href={`/sketches/roster/${el.spriteId}.png`} x={-110 * k} y={-300 * k} width={220 * k} height={300 * k} transform={tf} />;
+    return <image href={`/sketches/roster/${el.spriteId}.png`} x={-110 * k} y={-290 * k} width={220 * k} height={300 * k} transform={tf} />;
   }
-  if (sheet) return <g transform={`${tf} scale(${el.scale}) translate(-110 -300)`}><Nested drawing={sheet} seed={el.spriteId} /></g>;
+  const drawn = castSheet ?? sheet;
+  if (drawn) return <g transform={`${tf} scale(${el.scale}) translate(-110 -290)`}><Nested drawing={drawn} seed={el.spriteId} /></g>;
   return null;
 }
 

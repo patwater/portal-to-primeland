@@ -74,12 +74,15 @@ export const storyJsonSchema = obj({
 }, ["title", "dedication", "byline", "n2Resolution", "cast", "pages"]);
 
 // ---- Stored book ----
+import { drawingSchema } from "../shared/drawing";
+export const pageArtSchema = z.object({ brief: z.string().max(500), renderer: z.literal("rough").optional(), drawing: drawingSchema.optional() });
 export const bookSchema = z.object({
   id: z.string(), status: z.enum(["drawing", "ready"]), version: z.number().int(),
   soulVersion: z.object({ commit: z.string(), soul: z.string() }),
   createdAt: z.string(), kidName: z.string(), paper: z.enum(["lined", "dots", "grid"]),
   title: z.string(), dedication: z.string(), byline: z.string(), n2Resolution: z.string(),
   cast: z.array(castMemberSchema),
-  pages: z.array(storySchema.shape.pages.element.extend({ locked: z.boolean().optional() })),
+  castDrawings: z.record(z.string(), drawingSchema).optional(),
+  pages: z.array(storySchema.shape.pages.element.extend({ locked: z.boolean().optional(), art: pageArtSchema })),
 });
 export type StoredBook = z.infer<typeof bookSchema>;

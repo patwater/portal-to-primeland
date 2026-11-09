@@ -4,9 +4,11 @@ import { FriendlyError, TANGLED } from "./claude";
 import { answersSchema, blocksSchema, type StoredBook } from "./schemas";
 import { generateInterview, type InterviewEnv } from "./prompts/interviewer";
 import { generateStory, type StoryEnv } from "./prompts/storyteller";
-import { getBook, randomId, randomToken, saveBook, sha256, takeBudget, type StorageEnv } from "./storage";
+import { castSheetIds, getBook, getBookRaw, getMeta, randomId, randomToken, saveBook, saveCastSheet, savePageArt, sha256, takeArtAttempt, takeBudget, type StorageEnv } from "./storage";
+import { drawCastSheet, drawPage, type ArtEnv } from "./prompts/sketch";
+import { allowedSpriteIds } from "./sprites";
 
-export type Bindings = InterviewEnv & StoryEnv & StorageEnv & {
+export type Bindings = InterviewEnv & StoryEnv & ArtEnv & StorageEnv & {
   STUDIO_PASSWORD?: string; TURNSTILE_SECRET_KEY?: string; TURNSTILE_SITE_KEY?: string; TURNSTILE_VERIFY_URL?: string;
   GEN_LIMITER?: { limit(o: { key: string }): Promise<{ success: boolean }> };
 };
@@ -106,6 +108,50 @@ app.get("/api/books/:id/versions/:n", async (c) => {
     const n = Number(c.req.param("n"));
     const book = Number.isInteger(n) && n > 0 ? await getBook(c.env, c.req.param("id"), n) : null;
     return book ? c.json(book) : c.json({ error: "That edition has wandered off." }, 404);
+  } catch (e) { return friendly(c, e); }
+});
+
+/** Edit-token auth: the token arrives in an Authorization header (it lives in the URL fragment, never in a URL we serve). */
+async function requireEdit(c: { env: Bindings; req: { header(n: string): string | undefined } }, id: string): Promise<{ ok: true } | { ok: false; status: 401 | 403 | 404; error: string }> {
+  const meta = await getMeta(c.env, id);
+  if (!meta) return { ok: false, status: 404, error: "That book has wandered off." };
+  const token = (c.req.header("Authorization") ?? "").replace(/^Bearer /, "");
+  if (!token) return { ok: false, status: 401, error: "This needs the private edit link." };
+  return same(await sha256(token), meta.editTokenHash) ? { ok: true } : { ok: false, status: 403, error: "That edit link doesn't match this book." };
+}
+const artCap = (pages: number, cast: number) => pages * 3 + cast * 3 + 6;
+
+app.post("/api/books/:id/cast-sheet", async (c) => {
+  try {
+    const id = c.req.param("id");
+    const auth = await requireEdit(c, id);
+    if (!auth.ok) return c.json({ error: auth.error }, auth.status);
+    const body = (await c.req.json().catch(() => null)) as { castId?: string } | null;
+    const book = await getBookRaw(c.env, id);
+    const member = book?.cast.find((m) => m.id === body?.castId);
+    if (!book || !member || !member.custom) return c.json({ error: "That character doesn't need a sheet." }, 400);
+    if (!(await takeArtAttempt(c.env, id, artCap(book.pages.length, book.cast.length)))) return c.json({ error: "The Sketch Artist has used all his pencils for this book." }, 429);
+    const drawing = await drawCastSheet(c.env, member);
+    await saveCastSheet(c.env, id, book.version, member.id, drawing);
+    return c.json({ castId: member.id, drawing });
+  } catch (e) { return friendly(c, e); }
+});
+
+app.post("/api/books/:id/pages/:pageId/art", async (c) => {
+  try {
+    const id = c.req.param("id");
+    const auth = await requireEdit(c, id);
+    if (!auth.ok) return c.json({ error: auth.error }, auth.status);
+    const book = await getBookRaw(c.env, id);
+    const page = book?.pages.find((p) => p.id === c.req.param("pageId"));
+    if (!book || !page) return c.json({ error: "That page has wandered off." }, 404);
+    if (!(await takeArtAttempt(c.env, id, artCap(book.pages.length, book.cast.length)))) return c.json({ error: "The Sketch Artist has used all his pencils for this book." }, 429);
+    const drawing = await drawPage(c.env, {
+      n: page.n, brief: page.art.brief, place: page.place, characters: page.characters, kidName: book.kidName,
+      cast: book.cast, castSheets: await castSheetIds(c.env, book), allowed: allowedSpriteIds(book.kidName, book.cast.map((m) => m.id)),
+    });
+    await savePageArt(c.env, id, book.version, page.id, drawing);
+    return c.json({ pageId: page.id, drawing });
   } catch (e) { return friendly(c, e); }
 });
 

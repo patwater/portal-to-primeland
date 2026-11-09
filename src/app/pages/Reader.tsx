@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import type { Book } from "../lib/types";
-import { DrawingRenderer } from "../components/DrawingRenderer";
+import { CastContext, DrawingRenderer } from "../components/DrawingRenderer";
+import type { Progress } from "../lib/artist";
 import { RoughBox, RoughButton, Squiggle } from "../components/Rough";
 import { Link } from "../lib/router";
 import { editTokenFor } from "../lib/api";
@@ -27,7 +28,7 @@ const blankFrame = {
   elements: [{ type: "rect" as const, x: 80, y: 60, w: 640, h: 440, weight: 3 as const }],
 };
 
-export function Reader({ book }: { book: Book }) {
+export function Reader({ book, progress, onRetry }: { book: Book; progress?: Progress | null; onRetry?: () => void }) {
   const health = useCommit();
   const [i, setI] = useState(0);
   const [dir, setDir] = useState<"fwd" | "back">("fwd");
@@ -66,7 +67,7 @@ export function Reader({ book }: { book: Book }) {
               <DrawingRenderer drawing={p.art.drawing} seed={`${book.id}-${p.id}`} alt={p.art.brief} />
             ) : (
               <div className="art-pending" role="img" aria-label={p.art.brief}>
-                <p className="margin-note">The Sketch Artist is still sharpening a pencil.</p>
+                <p className="margin-note">{progress?.running ? "The Sketch Artist is drawing this one…" : "The Sketch Artist is still sharpening a pencil."}</p>
                 <p className="art-pending__brief">{p.art.brief}</p>
               </div>
             )}
@@ -129,6 +130,7 @@ export function Reader({ book }: { book: Book }) {
   const cur = leaves[i];
 
   return (
+    <CastContext.Provider value={book.castDrawings ?? {}}>
     <section
       className="reader"
       aria-roledescription="book"
@@ -150,6 +152,16 @@ export function Reader({ book }: { book: Book }) {
         </span>
       </div>
 
+      {progress && (progress.running || progress.failed.length > 0) && (
+        <p className="margin-note no-print reader__progress" role="status">
+          {progress.running
+            ? `Drawing… ${progress.done} of ${progress.total} done. You can start reading.`
+            : progress.capped
+              ? "The Sketch Artist has put his pencils down for now."
+              : `${progress.failed.length} drawing${progress.failed.length === 1 ? "" : "s"} didn't come out.`}
+          {!progress.running && onRetry && <> <button className="linkish" onClick={onRetry}>Try again</button></>}
+        </p>
+      )}
       <div className="reader__stage">
         {leaves.map((l, idx) => (
           <article
@@ -176,6 +188,7 @@ export function Reader({ book }: { book: Book }) {
         <p className="margin-note">Arrow keys turn the page. On a phone, swipe.</p>
       </RoughBox>
     </section>
+    </CastContext.Provider>
   );
 }
 

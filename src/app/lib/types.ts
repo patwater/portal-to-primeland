@@ -51,6 +51,8 @@ export type Book = {
   n2Resolution: string;
   paper: "lined" | "dots" | "grid";
   soulVersion?: { commit: string; soul: string };
+  status?: "drawing" | "ready";
   cast: CastMember[];
+  castDrawings?: Record<string, Drawing>;
   pages: BookPage[];
 };
