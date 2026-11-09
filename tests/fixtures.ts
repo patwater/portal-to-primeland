@@ -41,6 +41,8 @@ export function memoryKV() {
     store: m,
     async get(k: string, type?: string) { const v = m.get(k); return v == null ? null : type === "json" ? JSON.parse(v) : v; },
     async put(k: string, v: string) { m.set(k, v); },
+    async delete(k: string) { m.delete(k); },
+    async list({ prefix = "" }: { prefix?: string } = {}) { return { keys: [...m.keys()].filter((k) => k.startsWith(prefix)).map((name) => ({ name })), list_complete: true, cursor: "" }; },
   } as unknown as KVNamespace & { store: Map<string, string> };
 }
 

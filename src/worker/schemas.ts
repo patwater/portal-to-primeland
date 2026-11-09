@@ -73,6 +73,24 @@ export const storyJsonSchema = obj({
   pages: { type: "array", items: obj({ id: s, n: i, text: s, place: s, characters: { type: "array", items: s }, kidPrompt: s, marginNote: s, art: obj({ brief: s }, ["brief"]) }, ["id", "n", "text", "place", "characters", "art"]) },
 }, ["title", "dedication", "byline", "n2Resolution", "cast", "pages"]);
 
+// ---- Reviser ----
+const pageShape = storySchema.shape.pages.element;
+export const revisionSchema = z.object({
+  changes: z.array(z.object({
+    op: z.enum(["update", "insert", "remove"]), pageId: z.string(), afterPageId: z.string().optional(),
+    page: pageShape.optional(),
+  })).max(20),
+  castAdditions: z.array(castMemberSchema).max(6),
+  changelog: z.array(z.string().max(240)).min(1).max(20),
+});
+export type Revision = z.infer<typeof revisionSchema>;
+const pageJson = obj({ id: s, n: i, text: s, place: s, characters: { type: "array", items: s }, kidPrompt: s, marginNote: s, art: obj({ brief: s }, ["brief"]) }, ["id", "n", "text", "place", "characters", "art"]);
+export const revisionJsonSchema = obj({
+  changes: { type: "array", items: obj({ op: { type: "string", enum: ["update", "insert", "remove"] }, pageId: s, afterPageId: s, page: pageJson }, ["op", "pageId"]) },
+  castAdditions: { type: "array", items: obj({ id: s, name: s, tier: { type: "string", enum: ["traveler", "keeper", "citizen", "folk"] }, badge: { type: ["integer", "null"] }, look: s, custom: b }, ["id", "name", "tier", "badge", "look", "custom"]) },
+  changelog: { type: "array", items: s },
+}, ["changes", "castAdditions", "changelog"]);
+
 // ---- Stored book ----
 import { drawingSchema } from "../shared/drawing";
 export const pageArtSchema = z.object({ brief: z.string().max(500), renderer: z.literal("rough").optional(), drawing: drawingSchema.optional() });
@@ -83,6 +101,9 @@ export const bookSchema = z.object({
   title: z.string(), dedication: z.string(), byline: z.string(), n2Resolution: z.string(),
   cast: z.array(castMemberSchema),
   castDrawings: z.record(z.string(), drawingSchema).optional(),
+  kind: z.enum(["created", "revised", "restored"]).optional(),
+  changelog: z.array(z.string()).optional(),
+  restoredFrom: z.number().int().optional(),
   pages: z.array(storySchema.shape.pages.element.extend({ locked: z.boolean().optional(), art: pageArtSchema })),
 });
 export type StoredBook = z.infer<typeof bookSchema>;

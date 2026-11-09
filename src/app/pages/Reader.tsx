@@ -5,6 +5,8 @@ import type { Progress } from "../lib/artist";
 import { RoughBox, RoughButton, Squiggle } from "../components/Rough";
 import { Link } from "../lib/router";
 import { editTokenFor } from "../lib/api";
+import { FeedbackStrip } from "../components/FeedbackStrip";
+import { NextEdition, type EditionApi } from "../components/NextEdition";
 
 type Leaf = { key: string; node: ReactNode; label: string };
 
@@ -28,7 +30,7 @@ const blankFrame = {
   elements: [{ type: "rect" as const, x: 80, y: 60, w: 640, h: 440, weight: 3 as const }],
 };
 
-export function Reader({ book, progress, onRetry }: { book: Book; progress?: Progress | null; onRetry?: () => void }) {
+export function Reader({ book, progress, onRetry, editor, startAtNext }: { book: Book; progress?: Progress | null; onRetry?: () => void; editor?: EditionApi; startAtNext?: boolean }) {
   const health = useCommit();
   const [i, setI] = useState(0);
   const [dir, setDir] = useState<"fwd" | "back">("fwd");
@@ -75,12 +77,15 @@ export function Reader({ book, progress, onRetry }: { book: Book; progress?: Pro
           </div>
           <div className={`spread__text paper paper--${paper}`}>
             <p className="story">{p.text}</p>
+            {p.locked && !editor && <p className="margin-note no-print">★ {book.kidName} loved this page</p>}
             {p.kidPrompt && <p className="kidprompt"><span aria-hidden="true">☞ </span>Ask {book.kidName}: {p.kidPrompt}</p>}
             {p.marginNote && <p className="margin-note margin-note--tilt">{p.marginNote}</p>}
+            {editor && <FeedbackStrip book={book} page={p} editor={editor} />}
           </div>
         </div>
       ),
     })),
+    ...(editor ? [{ key: "next", label: "Next edition", node: <NextEdition book={book} api={editor} /> } as Leaf] : []),
     {
       key: "own",
       label: "Your own drawing",
@@ -127,6 +132,8 @@ export function Reader({ book, progress, onRetry }: { book: Book; progress?: Pro
     return () => window.removeEventListener("keydown", on);
   }, [leaves.length]);
 
+  // After a revision, land on the "next edition" leaf so the changelog is the first thing seen.
+  useEffect(() => { if (startAtNext) setI(Math.max(0, leaves.findIndex((l) => l.key === "next"))); }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const cur = leaves[i];
 
   return (

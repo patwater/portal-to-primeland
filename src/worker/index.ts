@@ -4,7 +4,9 @@ import { FriendlyError, TANGLED } from "./claude";
 import { answersSchema, blocksSchema, type StoredBook } from "./schemas";
 import { generateInterview, type InterviewEnv } from "./prompts/interviewer";
 import { generateStory, type StoryEnv } from "./prompts/storyteller";
-import { castSheetIds, getBook, getBookRaw, getMeta, randomId, randomToken, saveBook, saveCastSheet, savePageArt, sha256, takeArtAttempt, takeBudget, type StorageEnv } from "./storage";
+import { carryArt, castSheetIds, deleteBook, getBlocks, getBook, getBookRaw, getFeedback, getMeta, getVersionRaw, listVersions, randomId, randomToken, saveBlocks, saveBook, saveCastSheet, saveFeedback, savePageArt, sha256, takeArtAttempt, takeBudget, type StorageEnv } from "./storage";
+import { generateRevision } from "./prompts/reviser";
+import { feedbackSchema, hasRequests, lockedPageIds, cleanText, type Feedback } from "../shared/feedback";
 import { drawCastSheet, drawPage, type ArtEnv } from "./prompts/sketch";
 import { allowedSpriteIds } from "./sprites";
 
@@ -92,6 +94,7 @@ app.post("/api/books", async (c) => {
       n2Resolution: story.n2Resolution, cast: story.cast, pages: story.pages,
     };
     await saveBook(c.env, book, await sha256(editToken));
+    await saveBlocks(c.env, id, blocks.data); // private: lets the Reviser honor avoid notes later; never served
     return c.json({ id, editToken, book });
   } catch (e) { return friendly(c, e); }
 });
@@ -152,6 +155,104 @@ app.post("/api/books/:id/pages/:pageId/art", async (c) => {
     });
     await savePageArt(c.env, id, book.version, page.id, drawing);
     return c.json({ pageId: page.id, drawing });
+  } catch (e) { return friendly(c, e); }
+});
+
+// ---- feedback, revision, past editions, restore, delete (milestone 5) ----
+const clampFeedback = (raw: unknown, pageIds: Set<string>): Feedback | null => {
+  const f = feedbackSchema.safeParse(raw);
+  if (!f.success) return null;
+  const pages: Feedback["pages"] = {};
+  for (const [id, p] of Object.entries(f.data.pages)) if (pageIds.has(id)) {
+    pages[id] = { ...p, note: p.note === undefined ? undefined : cleanText(p.note, 200), moreOf: p.moreOf && { ids: p.moreOf.ids, text: cleanText(p.moreOf.text, 200) } };
+  }
+  return { pages, notes: f.data.notes === undefined ? undefined : cleanText(f.data.notes, 400), kidQuote: f.data.kidQuote === undefined ? undefined : cleanText(f.data.kidQuote, 300), nextPlace: f.data.nextPlace };
+};
+
+app.get("/api/books/:id/feedback", async (c) => {
+  try {
+    const id = c.req.param("id");
+    const auth = await requireEdit(c, id);
+    if (!auth.ok) return c.json({ error: auth.error }, auth.status);
+    const meta = await getMeta(c.env, id);
+    return c.json(await getFeedback(c.env, id, meta!.latestVersion));
+  } catch (e) { return friendly(c, e); }
+});
+
+app.put("/api/books/:id/feedback", async (c) => {
+  try {
+    const id = c.req.param("id");
+    const auth = await requireEdit(c, id);
+    if (!auth.ok) return c.json({ error: auth.error }, auth.status);
+    const book = await getBookRaw(c.env, id);
+    const f = clampFeedback(await c.req.json().catch(() => null), new Set(book?.pages.map((p) => p.id)));
+    if (!book || !f) return c.json({ error: "That feedback didn't make sense to the scissors." }, 400);
+    await saveFeedback(c.env, id, book.version, f);
+    return c.json({ ok: true });
+  } catch (e) { return friendly(c, e); }
+});
+
+app.get("/api/books/:id/versions", async (c) => {
+  try {
+    const id = c.req.param("id");
+    if (!(await getMeta(c.env, id))) return c.json({ error: "That book has wandered off." }, 404);
+    return c.json({ versions: await listVersions(c.env, id) });
+  } catch (e) { return friendly(c, e); }
+});
+
+app.post("/api/books/:id/revise", async (c) => {
+  try {
+    const id = c.req.param("id");
+    const auth = await requireEdit(c, id);
+    if (!auth.ok) return c.json({ error: auth.error }, auth.status);
+    if (await limited(c)) return c.json({ error: "Not so fast, please. The scissors need a moment." }, 429);
+    const body = (await c.req.json().catch(() => null)) as { feedback?: unknown; turnstileToken?: string } | null;
+    const book = await getBookRaw(c.env, id);
+    const blocks = await getBlocks(c.env, id);
+    if (!book || !blocks) return c.json({ error: "This book can't be sent back through the portal." }, 409);
+    const feedback = body?.feedback ? clampFeedback(body.feedback, new Set(book.pages.map((p) => p.id))) : await getFeedback(c.env, id, book.version);
+    if (!feedback) return c.json({ error: "That feedback didn't make sense to the scissors." }, 400);
+    if (!hasRequests(feedback)) return c.json({ error: "Tell us how the reading went first: a note, a stamp, or something they said." }, 422);
+    if (!(await turnstileOk(c.env, body?.turnstileToken, ip(c)))) return c.json({ error: "The doorman wasn't sure you were a grown-up. Please try the check again." }, 403);
+    if (!(await takeBudget(c.env))) return c.json({ error: "The Delivery Man has run out of boxes for today. Please come back tomorrow." }, 429);
+    await saveFeedback(c.env, id, book.version, feedback);
+
+    const rev = await generateRevision(c.env, book, blocks, feedback);
+    const sealed = lockedPageIds(feedback).filter((p) => rev.pages.some((x) => x.id === p));
+    const next: StoredBook = { ...book, version: book.version + 1, kind: "revised", changelog: rev.changelog, restoredFrom: undefined, createdAt: new Date().toISOString(),
+      soulVersion: { commit: version.commit, soul: version.soul }, status: "drawing", pages: rev.pages, cast: rev.cast, castDrawings: undefined };
+    await saveBook(c.env, next);
+    await carryArt(c.env, id, book, next);
+    await saveFeedback(c.env, id, next.version, { pages: Object.fromEntries(sealed.map((p) => [p, { seal: true }])) });
+    return c.json({ book: await getBook(c.env, id), changelog: rev.changelog });
+  } catch (e) { return friendly(c, e); }
+});
+
+app.post("/api/books/:id/restore/:n", async (c) => {
+  try {
+    const id = c.req.param("id");
+    const auth = await requireEdit(c, id);
+    if (!auth.ok) return c.json({ error: auth.error }, auth.status);
+    const n = Number(c.req.param("n"));
+    const meta = await getMeta(c.env, id);
+    const old = Number.isInteger(n) && n > 0 ? await getVersionRaw(c.env, id, n) : null;
+    if (!meta || !old) return c.json({ error: "That edition has wandered off." }, 404);
+    // History is never rewritten: restoring edition n saves a copy of it as the newest edition.
+    const next: StoredBook = { ...old, version: meta.latestVersion + 1, kind: "restored", restoredFrom: n, changelog: [`Edition ${n} is back.`], createdAt: new Date().toISOString(), status: "drawing", castDrawings: undefined };
+    await saveBook(c.env, next);
+    await carryArt(c.env, id, old, next);
+    await saveFeedback(c.env, id, next.version, { pages: {} });
+    return c.json({ book: await getBook(c.env, id) });
+  } catch (e) { return friendly(c, e); }
+});
+
+app.delete("/api/books/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    const auth = await requireEdit(c, id);
+    if (!auth.ok) return c.json({ error: auth.error }, auth.status);
+    await deleteBook(c.env, id);
+    return c.json({ ok: true });
   } catch (e) { return friendly(c, e); }
 });
 

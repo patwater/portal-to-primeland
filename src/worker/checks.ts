@@ -25,9 +25,11 @@ export function storyText(story: Story): string {
     ...story.pages.flatMap((p) => [p.text, p.kidPrompt ?? "", p.marginNote ?? "", p.art.brief])].join("\n");
 }
 
-export function checkStory(story: Story, blocks: FamilyBlocks): string[] {
+export function checkStory(story: Story, blocks: FamilyBlocks, opts: { pageRange?: { min: number; max: number } } = {}): string[] {
   const errors: string[] = [];
-  if (story.pages.length !== blocks.length) errors.push(`expected exactly ${blocks.length} pages, got ${story.pages.length}`);
+  const range = opts.pageRange;
+  if (range) { if (story.pages.length < range.min || story.pages.length > range.max) errors.push(`expected ${range.min} to ${range.max} pages, got ${story.pages.length}`); }
+  else if (story.pages.length !== blocks.length) errors.push(`expected exactly ${blocks.length} pages, got ${story.pages.length}`);
   story.pages.forEach((p, i) => { if (p.n !== i + 1) errors.push(`page ${i + 1} has n=${p.n}`); });
   const pageIds = new Set<string>();
   for (const p of story.pages) { if (pageIds.has(p.id)) errors.push(`duplicate page id ${p.id}`); pageIds.add(p.id); }

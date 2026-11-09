@@ -2,6 +2,8 @@
 // restarts on every save. Only the SHA-256 of the edit token is ever stored.
 import type { StoredBook } from "./schemas";
 import type { ParsedDrawing } from "../shared/drawing";
+import type { Feedback } from "../shared/feedback";
+import type { FamilyBlocks } from "./schemas";
 
 export type StorageEnv = { BOOKS?: KVNamespace; BOOK_TTL_DAYS?: string; DAILY_BOOK_BUDGET?: string };
 
@@ -70,6 +72,9 @@ export async function getBookRaw(env: StorageEnv, id: string): Promise<StoredBoo
   const v = (await kv.get<Meta>(`book:${id}:meta`, "json"))?.latestVersion;
   return v ? kv.get<StoredBook>(`book:${id}:v${v}`, "json") : null;
 }
+export async function getVersionRaw(env: StorageEnv, id: string, v: number): Promise<StoredBook | null> {
+  return need(env).get<StoredBook>(`book:${id}:v${v}`, "json");
+}
 /** Ids of cast members that already have a cast sheet. */
 export async function castSheetIds(env: StorageEnv, book: StoredBook): Promise<Set<string>> {
   const kv = need(env);
@@ -96,4 +101,48 @@ export async function takeBudget(env: StorageEnv, now = new Date()): Promise<boo
   if (used >= Number(env.DAILY_BOOK_BUDGET ?? 200)) return false;
   await kv.put(key, String(used + 1), { expirationTtl: 3 * 86400 });
   return true;
+}
+
+// ---- the family's blocks (private, never served), feedback, versions, deletion ----
+export const saveBlocks = (env: StorageEnv, id: string, blocks: FamilyBlocks) =>
+  need(env).put(`book:${id}:blocks`, JSON.stringify(blocks), { expirationTtl: ttl(env) });
+export const getBlocks = (env: StorageEnv, id: string) => need(env).get<FamilyBlocks>(`book:${id}:blocks`, "json");
+
+const feedbackKey = (id: string, v: number) => `book:${id}:v${v}:feedback`;
+export const saveFeedback = (env: StorageEnv, id: string, v: number, f: Feedback) =>
+  need(env).put(feedbackKey(id, v), JSON.stringify(f), { expirationTtl: ttl(env) });
+export async function getFeedback(env: StorageEnv, id: string, v: number): Promise<Feedback> {
+  return (await need(env).get<Feedback>(feedbackKey(id, v), "json")) ?? { pages: {} };
+}
+
+export type VersionInfo = { version: number; createdAt: string; kind: string; changelog: string[]; pages: number };
+export async function listVersions(env: StorageEnv, id: string): Promise<VersionInfo[]> {
+  const kv = need(env);
+  const latest = (await kv.get<Meta>(`book:${id}:meta`, "json"))?.latestVersion ?? 0;
+  const books = await Promise.all(Array.from({ length: latest }, (_, i) => kv.get<StoredBook>(`book:${id}:v${i + 1}`, "json")));
+  return books.flatMap((b) => (b ? [{ version: b.version, createdAt: b.createdAt, kind: b.kind ?? "created", changelog: b.changelog ?? [], pages: b.pages.length }] : []));
+}
+
+/** Copies drawings that are still valid into a new version: pages whose brief is unchanged, and every cast sheet. */
+export async function carryArt(env: StorageEnv, id: string, from: StoredBook, to: StoredBook) {
+  const kv = need(env);
+  const opts = { expirationTtl: ttl(env) };
+  const copy = async (a: string, b: string) => { const v = await kv.get(a); if (v != null) await kv.put(b, v, opts); };
+  const oldById = new Map(from.pages.map((p) => [p.id, p]));
+  await Promise.all([
+    ...to.pages.filter((p) => oldById.get(p.id)?.art.brief === p.art.brief).map((p) => copy(pageArtKey(id, from.version, p.id), pageArtKey(id, to.version, p.id))),
+    ...from.cast.map((c) => copy(castKey(id, from.version, c.id), castKey(id, to.version, c.id))),
+  ]);
+}
+
+export async function deleteBook(env: StorageEnv, id: string): Promise<number> {
+  const kv = need(env);
+  let cursor: string | undefined, n = 0;
+  do {
+    const page = await kv.list({ prefix: `book:${id}:`, cursor });
+    await Promise.all(page.keys.map((k) => kv.delete(k.name)));
+    n += page.keys.length;
+    cursor = page.list_complete ? undefined : page.cursor;
+  } while (cursor);
+  return n;
 }

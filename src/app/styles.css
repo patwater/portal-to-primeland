@@ -207,3 +207,23 @@ input[type="range"] { width: 100%; accent-color: var(--ink); min-height: 44px; }
 .art-pending__brief { font-family: var(--note); font-size: 22px; color: var(--ink-soft); }
 
 .reader__progress { text-align: center; padding: 4px 8px; }
+
+/* milestone 5: stamps, feedback, next edition */
+.feedback { margin-top: 14px; display: grid; gap: 8px; }
+.feedback__stamps { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.stamp { position: relative; width: 156px; height: 48px; background: none; border: 0; padding: 0; cursor: pointer; transform: rotate(-1.5deg); }
+.stamp:nth-child(even) { transform: rotate(1.2deg); }
+.stamp__svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.stamp__label { position: relative; font-family: var(--note); font-weight: 700; font-size: 20px; line-height: 48px; white-space: nowrap; }
+.stamp:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.feedback__more { display: grid; gap: 6px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-family: var(--note); font-size: 20px; padding: 2px 8px; border: 1.5px dashed var(--ink); border-radius: 14px; min-height: 36px; cursor: pointer; }
+.chip input { width: 18px; height: 18px; accent-color: var(--ink); }
+.next { align-items: stretch; text-align: left; }
+.next__inner { width: min(100%, 640px); margin: 0 auto; display: grid; gap: 14px; background: color-mix(in srgb, var(--paper) 92%, transparent); padding: 6px 14px; }
+select { font: inherit; min-height: 44px; padding: 6px; background: var(--paper); border: 2px dashed var(--ink); }
+.changelog ul { margin: 6px 0; padding-left: 20px; }
+.versions { padding-left: 20px; }
+.versions__actions { display: inline-flex; gap: 14px; margin-left: 6px; }
+.danger { text-align: center; }
+.banner { margin: 0; padding: 8px 16px; text-align: center; font-family: var(--note); font-size: 22px; background: var(--highlighter); }

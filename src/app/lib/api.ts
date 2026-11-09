@@ -1,6 +1,7 @@
 import type { Blocks } from "./blocks";
 import type { Book } from "./types";
 import { load, save } from "./storage";
+import type { Feedback } from "../../shared/feedback";
 
 export type Question = { id: string; text: string; why: string; askKid: boolean; kind: "single" | "multi" | "text"; options: string[] };
 export type Answer = { id: string; text: string; askKid?: boolean };
@@ -35,3 +36,16 @@ export const editTokenFor = (id: string): string | undefined => {
   const m = window.location.hash.match(/edit=([\w-]+)/);
   return m?.[1] ?? myBooks().find((b) => b.id === id)?.editToken;
 };
+
+// ---- feedback, revision, editions (milestone 5): all need the private edit token ----
+export type VersionInfo = { version: number; createdAt: string; kind: string; changelog: string[]; pages: number };
+const auth = (token: string, init: RequestInit = {}): RequestInit => ({ ...init, headers: { ...(init.headers as object), Authorization: `Bearer ${token}`, ...(init.body ? { "content-type": "application/json" } : {}) } });
+export const getFeedback = (id: string, token: string) => request<Feedback>(`/api/books/${id}/feedback`, auth(token));
+export const putFeedback = (id: string, token: string, f: Feedback) => request<{ ok: true }>(`/api/books/${id}/feedback`, auth(token, { method: "PUT", body: JSON.stringify(f) }));
+export const reviseBook = (id: string, token: string, feedback: Feedback, turnstileToken: string) =>
+  request<{ book: Book; changelog: string[] }>(`/api/books/${id}/revise`, auth(token, { method: "POST", body: JSON.stringify({ feedback, turnstileToken }) }));
+export const listVersions = (id: string) => request<{ versions: VersionInfo[] }>(`/api/books/${id}/versions`);
+export const getVersion = (id: string, n: number) => request<Book>(`/api/books/${id}/versions/${n}`);
+export const restoreVersion = (id: string, token: string, n: number) => request<{ book: Book }>(`/api/books/${id}/restore/${n}`, auth(token, { method: "POST" }));
+export const deleteBook = (id: string, token: string) => request<{ ok: true }>(`/api/books/${id}`, auth(token, { method: "DELETE" }));
+export function forgetBook(id: string) { save(KEY, myBooks().filter((b) => b.id !== id)); }

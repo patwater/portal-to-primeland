@@ -39,6 +39,7 @@ export type BookPage = {
   characters: string[];
   kidPrompt?: string;
   marginNote?: string;
+  locked?: boolean;
   art: { brief: string; renderer?: "rough"; drawing?: Drawing };
 };
 
@@ -52,6 +53,9 @@ export type Book = {
   paper: "lined" | "dots" | "grid";
   soulVersion?: { commit: string; soul: string };
   status?: "drawing" | "ready";
+  version?: number;
+  kind?: "created" | "revised" | "restored";
+  changelog?: string[];
   cast: CastMember[];
   castDrawings?: Record<string, Drawing>;
   pages: BookPage[];
