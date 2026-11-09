@@ -49,7 +49,7 @@ describe("repairDrawing", () => {
     expect(repairDrawing({ elements: Array.from({ length: 90 }, () => good) })!.drawing.elements).toHaveLength(70);
   });
   it("gives up when nothing is usable", () => {
-    expect(repairDrawing({ elements: [{ type: "path", d: "Z9" }] })).toBeNull();
+    expect(repairDrawing({ elements: [{ type: "path", d: "A 1 2" }] })).toBeNull();
     expect(repairDrawing("not a drawing")).toBeNull();
     expect(repairDrawing({})).toBeNull();
   });
