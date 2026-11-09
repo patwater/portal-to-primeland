@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 export type SpriteInfo = { id: string; file: string; width: number; height: number; anchor: { x: number; y: number }; facing: string; source: string };
 export type ExtraInfo = { id: string; file: string; width: number; height: number; source: string };
-export type RosterSheetInfo = { id: string; kind: "json" | "png"; status?: "pending" | "approved" };
+export type RosterSheetInfo = { id: string; kind: "json" | "png"; status?: "pending" | "approved"; source?: string };
 type Index = { sprites: Record<string, SpriteInfo>; extras: ExtraInfo[]; sheets: Record<string, RosterSheetInfo> };
 
 let cache: Promise<Index> | null = null;

@@ -233,3 +233,10 @@ select { font: inherit; min-height: 44px; padding: 6px; background: var(--paper)
 .versions__actions { display: inline-flex; gap: 14px; margin-left: 6px; }
 .danger { text-align: center; }
 .banner { margin: 0; padding: 8px 16px; text-align: center; font-family: var(--note); font-size: 22px; background: var(--highlighter); }
+
+/* roster sheets are 220 x 300 drawings: fit them to the card's art box instead of their natural height */
+.badge-card__art { height: 170px; }
+.char-art { max-height: 170px; }
+.char-art--pending { height: 170px; }
+.badge-card__art .drawing, .flip__art .drawing { height: 100%; width: auto; max-width: 100%; margin: 0 auto; }
+.flip__art { height: 52%; }

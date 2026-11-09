@@ -48,7 +48,7 @@ Verify binding syntax in `wrangler.jsonc` against current Cloudflare docs before
 ## Checks you can run
 
 - `npm run test:live` with `ANTHROPIC_API_KEY` set runs five varied families through the real Storyteller and confirms the soul is read from the prompt cache.
-- `npm run draw-roster` draws the roster sheets that don't have a canon sprite.
+- `npm run hand-sheets` regenerates the 42 hand-authored placeholder roster sheets (no key needed). `npm run draw-roster` (needs a key) replaces them with Sketch Artist drawings, except any you replaced with your own PNG.
 - `npm run build` fails if anything that looks like an API key reaches `dist/client`.
 
 ## Fonts

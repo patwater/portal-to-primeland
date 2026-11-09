@@ -12,7 +12,8 @@
     "deploy": "npm run build && wrangler deploy",
     "sprites": "python3 scripts/extract-sprites.py",
     "draw-roster": "tsx scripts/draw-roster.ts",
-    "test:live": "vitest run tests/live.test.ts"
+    "test:live": "vitest run tests/live.test.ts",
+    "hand-sheets": "tsx scripts/hand-sheets.ts"
   },
   "dependencies": {
     "hono": "^4.13.17",
