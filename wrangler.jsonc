@@ -1,0 +1,16 @@
+{
+  "name": "portal-to-primeland",
+  "main": "src/worker/index.ts",
+  "compatibility_date": "2026-11-01",
+  "assets": { "not_found_handling": "single-page-application", "run_worker_first": ["/api/*"] },
+  "vars": {
+    "MODEL_STORY": "claude-sonnet-5-5",
+    "MODEL_ART": "claude-sonnet-5-5",
+    "MODEL_INTERVIEW": "claude-haiku-5-5",
+    "DAILY_BOOK_BUDGET": "200",
+    "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
+    "BOOK_TTL_DAYS": "400"
+  }
+  // M3 adds: kv_namespaces (BOOKS) and ratelimits (GEN_LIMITER). Create the namespace with
+  // `npx wrangler kv namespace create BOOKS` and verify binding syntax against current docs.
+}
