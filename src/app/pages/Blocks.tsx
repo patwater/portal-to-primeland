@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { RoughBox, RoughButton, RoughCheck, Squiggle } from "../components/Rough";
-import { Link } from "../lib/router";
+import { Link, navigate } from "../lib/router";
 import { defaultBlocks, clean, n2Options, puzzleOptions, type Blocks as B } from "../lib/blocks";
 import { citizens, keepers, numberedPlaces, placeName, roster } from "../lib/world";
 import { PrimelandMap } from "../components/PrimelandMap";
@@ -101,6 +101,7 @@ export function Blocks() {
         onSubmit={(e) => {
           e.preventDefault();
           setTried(true);
+          if (b.name.trim()) navigate("/interview");
         }}
       >
         <Page open seed="pgA" title="A. Your kid, the hero" hint="the blank traveler card">
@@ -212,12 +213,6 @@ export function Blocks() {
         <div className="form-foot">
           <RoughButton big type="submit" seed="portal" className="wobble">Open the portal →</RoughButton>
           {tried && missing && <p className="notice" role="alert">The Delivery Man needs a name for the label, please.</p>}
-          {tried && !missing && (
-            <p className="notice" role="status">
-              Your blocks are saved on this device. The portal itself opens in milestone 3 (the Delivery Man’s questions and the
-              Storyteller). For now, <Link to="/b/sample">read the sample edition</Link>.
-            </p>
-          )}
         </div>
       </form>
     </section>

@@ -1,7 +1,8 @@
 import { RoughBox, RoughButton, Squiggle } from "../components/Rough";
 import { DrawingRenderer } from "../components/DrawingRenderer";
 import { cube, ground, kid, cat } from "../lib/draw";
-import { navigate } from "../lib/router";
+import { Link, navigate } from "../lib/router";
+import { myBooks } from "../lib/api";
 
 const cover = {
   viewBox: [800, 560] as [800, 560],
@@ -30,6 +31,12 @@ export function Landing() {
           </p>
           <p className="soft">Every number has its place, and every kid has their story.</p>
         </RoughBox>
+        {myBooks().length > 0 && (
+          <RoughBox className="landing__note" seed="mine">
+            <h2 className="field__label">Your books on this device</h2>
+            <ul className="folk">{myBooks().map((b) => <li key={b.id}><Link to={`/b/${b.id}${b.editToken ? `#edit=${b.editToken}` : ""}`}>{b.title}</Link> for {b.kidName}</li>)}</ul>
+          </RoughBox>
+        )}
         <div className="landing__cta">
           <RoughButton big seed="start" onClick={() => navigate("/blocks")}>Pick your blocks →</RoughButton>
           <RoughButton seed="sample" onClick={() => navigate("/b/sample")}>Read the sample edition</RoughButton>

@@ -6,7 +6,8 @@ import { About } from "./pages/About";
 import { Cards } from "./pages/Cards";
 import { Citizens } from "./pages/Citizens";
 import { Studio } from "./pages/Studio";
-import { sampleBook } from "./lib/sample";
+import { Interview } from "./pages/Interview";
+import { BookLoader } from "./pages/BookLoader";
 
 export function App() {
   const path = usePath();
@@ -32,8 +33,9 @@ export function App() {
         {path === "/cards" && <Cards />}
         {path === "/citizens" && <Citizens />}
         {path === "/studio/roster" && <Studio />}
-        {path.startsWith("/b/") && <Reader book={sampleBook} />}
-        {!["/", "/blocks", "/about", "/cards", "/citizens", "/studio/roster"].includes(path) && !isReader && <Landing />}
+        {path === "/interview" && <Interview />}
+        {isReader && <BookLoader id={path.slice(3)} />}
+        {!["/", "/blocks", "/about", "/cards", "/citizens", "/studio/roster", "/interview"].includes(path) && !isReader && <Landing />}
       </main>
     </>
   );

@@ -3,6 +3,9 @@
   "main": "src/worker/index.ts",
   "compatibility_date": "2026-11-01",
   "assets": { "not_found_handling": "single-page-application", "run_worker_first": ["/api/*"] },
+  // Omit `id` and wrangler provisions the KV namespace on first deploy (wrangler 4.45+).
+  "kv_namespaces": [{ "binding": "BOOKS" }],
+  "ratelimits": [{ "name": "GEN_LIMITER", "namespace_id": "1001", "simple": { "limit": 6, "period": 60 } }],
   "vars": {
     "MODEL_STORY": "claude-sonnet-5-5",
     "MODEL_ART": "claude-sonnet-5-5",
@@ -11,6 +14,5 @@
     "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
     "BOOK_TTL_DAYS": "400"
   }
-  // M3 adds: kv_namespaces (BOOKS) and ratelimits (GEN_LIMITER). Create the namespace with
-  // `npx wrangler kv namespace create BOOKS` and verify binding syntax against current docs.
+  // Secrets (never in this file): ANTHROPIC_API_KEY, TURNSTILE_SECRET_KEY, STUDIO_PASSWORD.
 }

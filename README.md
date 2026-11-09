@@ -4,7 +4,7 @@ A custom picture-book microsite: a parent fills in blocks about their kid, the S
 
 ## Status
 
-Milestones 1 and 2 are built. M1: landing page, the blocks form, the page-turning reader with a hand-authored sample edition, the print stylesheet, and the content pipeline (`/api/health`). M2: roster and places parsers with badge checks (`npm run roster`), canon sprites and sketchbook extras extracted from `assets-src/` (`npm run sprites`), the map, citizen badge cards, the card-flipping game, and the `/studio/roster` review page. Roster sheets for characters without a canon sprite are drawn by `npm run draw-roster` (needs `ANTHROPIC_API_KEY`). Milestones 3 to 6 follow the brief.
+Milestones 1 and 2 are built. M1: landing page, the blocks form, the page-turning reader with a hand-authored sample edition, the print stylesheet, and the content pipeline (`/api/health`). M2: roster and places parsers with badge checks (`npm run roster`), canon sprites and sketchbook extras extracted from `assets-src/` (`npm run sprites`), the map, citizen badge cards, the card-flipping game, and the `/studio/roster` review page. Roster sheets for characters without a canon sprite are drawn by `npm run draw-roster` (needs `ANTHROPIC_API_KEY`). M3: Worker routes (`/api/interview`, `/api/books`, `/api/books/:id`), the prompt assembler with prompt caching, the Claude wrapper, output checks, Turnstile, rate limiting and a daily budget, plus the interview page, loading scene and generated-book reader. Milestones 4 to 6 follow the brief.
 
 ## Run it
 
@@ -16,6 +16,18 @@ npm run build    # writes content hashes, type-checks, runs tests, builds client
 ```
 
 Local secrets (later milestones) go in `.dev.vars`, which is gitignored. Production secrets are set with `npx wrangler secret put ANTHROPIC_API_KEY`.
+
+## Secrets and bindings
+
+```bash
+npx wrangler secret put ANTHROPIC_API_KEY
+npx wrangler secret put TURNSTILE_SECRET_KEY   # from your Turnstile widget
+npx wrangler secret put STUDIO_PASSWORD
+```
+
+`TURNSTILE_SITE_KEY` in `wrangler.jsonc` is Cloudflare's always-pass **test** key. Replace it with your widget's public site key before launch. The `BOOKS` KV namespace is provisioned automatically on first deploy. For local runs, copy the same names into `.dev.vars` (Turnstile test secret: `1x0000000000000000000000000000000AA`). `ANTHROPIC_BASE_URL` and `TURNSTILE_VERIFY_URL` are optional overrides for pointing a local run at mock servers.
+
+To check milestone 3 against the real API (five varied families, plus the prompt cache): `ANTHROPIC_API_KEY=sk-ant-... npm run test:live`.
 
 ## Deploy
 

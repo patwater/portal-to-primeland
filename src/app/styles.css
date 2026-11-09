@@ -195,3 +195,13 @@ input[type="range"] { width: 100%; accent-color: var(--ink); min-height: 44px; }
 .flip__art .char-art { max-height: 100%; }
 .cards__nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
 @media (prefers-reduced-motion: reduce) { .flip__face { transition: none; } }
+
+/* milestone 3: loading scene, pending art */
+.loading { min-height: calc(100vh - 56px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 16px; }
+.loading__art { width: min(92vw, 620px); }
+.ticker { width: min(92vw, 620px); overflow: hidden; border-top: 2px dashed var(--ink); border-bottom: 2px dashed var(--ink); padding: 6px 0; text-align: center; font-family: var(--note); font-size: 28px; background: var(--paper); min-height: 52px; }
+.ticker__msg { display: inline-block; animation: tape .6s ease-out; }
+@keyframes tape { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .ticker__msg { animation: none; } }
+.art-pending { width: 100%; padding: 24px; text-align: center; }
+.art-pending__brief { font-family: var(--note); font-size: 22px; color: var(--ink-soft); }

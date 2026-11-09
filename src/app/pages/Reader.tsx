@@ -3,6 +3,7 @@ import type { Book } from "../lib/types";
 import { DrawingRenderer } from "../components/DrawingRenderer";
 import { RoughBox, RoughButton, Squiggle } from "../components/Rough";
 import { Link } from "../lib/router";
+import { editTokenFor } from "../lib/api";
 
 type Leaf = { key: string; node: ReactNode; label: string };
 
@@ -61,7 +62,14 @@ export function Reader({ book }: { book: Book }) {
       node: (
         <div className="spread">
           <div className="spread__art paper paper--dots">
-            {p.art.drawing && <DrawingRenderer drawing={p.art.drawing} seed={`${book.id}-${p.id}`} alt={p.art.brief} />}
+            {p.art.drawing ? (
+              <DrawingRenderer drawing={p.art.drawing} seed={`${book.id}-${p.id}`} alt={p.art.brief} />
+            ) : (
+              <div className="art-pending" role="img" aria-label={p.art.brief}>
+                <p className="margin-note">The Sketch Artist is still sharpening a pencil.</p>
+                <p className="art-pending__brief">{p.art.brief}</p>
+              </div>
+            )}
             <span className="pageno">{p.n}</span>
           </div>
           <div className={`spread__text paper paper--${paper}`}>
@@ -136,7 +144,10 @@ export function Reader({ book }: { book: Book }) {
       <div className="reader__bar no-print">
         <Link to="/">← Primeland</Link>
         <span className="margin-note" aria-live="polite">{cur.label} · {i + 1} of {leaves.length}</span>
-        <button className="linkish" onClick={() => window.print()}>Print or save as PDF</button>
+        <span>
+          {book.id !== "sample" && <CopyLinks id={book.id} />}
+          <button className="linkish" onClick={() => window.print()}>Print or save as PDF</button>
+        </span>
       </div>
 
       <div className="reader__stage">
@@ -165,5 +176,21 @@ export function Reader({ book }: { book: Book }) {
         <p className="margin-note">Arrow keys turn the page. On a phone, swipe.</p>
       </RoughBox>
     </section>
+  );
+}
+
+function CopyLinks({ id }: { id: string }) {
+  const [said, setSaid] = useState("");
+  const copy = async (label: string, url: string) => {
+    try { await navigator.clipboard.writeText(url); setSaid(`${label} copied`); } catch { setSaid("Copy it from the address bar instead"); }
+    setTimeout(() => setSaid(""), 2500);
+  };
+  const origin = window.location.origin, token = editTokenFor(id);
+  return (
+    <>
+      <button className="linkish" onClick={() => copy("Share link", `${origin}/b/${id}`)}>Copy share link</button>
+      {token && <button className="linkish" onClick={() => copy("Private edit link", `${origin}/b/${id}#edit=${token}`)}>Copy private edit link</button>}
+      {said && <span className="margin-note" role="status"> {said}</span>}
+    </>
   );
 }
