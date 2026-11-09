@@ -10,6 +10,13 @@ export type MyBook = { id: string; editToken?: string; title: string; kidName: s
 export class ApiError extends Error {
   constructor(public status: number, message: string, public code?: string) { super(message); }
 }
+const ANTHROPIC_HINTS: Record<string, string> = {
+  anthropic_key_missing: "The Anthropic API key secret is not set on the Worker.",
+  anthropic_key_rejected: "Anthropic refused the API key set on the Worker. Check that it is valid and has credit.",
+  anthropic_model_unavailable: "Anthropic doesn't know the model name set in wrangler.jsonc (or the key can't use it).",
+  anthropic_bad_request: "Anthropic rejected the request itself. Check the Worker logs for the details.",
+  anthropic_max_tokens: "The model ran out of room before finishing. Check the Worker logs.",
+};
 const OWNER_HINT = " (Site owner: the Turnstile site key in wrangler.jsonc and the secret key set on the Worker must come from the same Turnstile widget.)";
 const FALLBACK = "The scissors got tangled. Shall we try that again?";
 
@@ -19,7 +26,8 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const body = (await res.json().catch(() => null)) as { error?: string; code?: string } | null;
   if (!res.ok) {
     const setup = body?.code === "turnstile_rejected" || body?.code === "turnstile_misconfigured" || body?.code === "turnstile_unconfigured";
-    throw new ApiError(res.status, (body?.error ?? FALLBACK) + (setup ? OWNER_HINT : ""), body?.code);
+    const hint = body?.code ? ANTHROPIC_HINTS[body.code] : undefined;
+    throw new ApiError(res.status, (body?.error ?? FALLBACK) + (setup ? OWNER_HINT : "") + (hint ? ` (Site owner: ${hint})` : ""), body?.code);
   }
   return body as T;
 }

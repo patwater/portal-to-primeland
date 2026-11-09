@@ -97,7 +97,7 @@ const turnstileFail = (c: { json(b: unknown, s?: number): Response }, t: Extract
 const friendly = (c: { json(b: unknown, s?: number): Response }, e: unknown) => {
   if (e instanceof FriendlyError) {
     console.log(JSON.stringify({ route: "error", status: e.status, detail: e.message })); // details are fixed strings written in claude.ts and the checks, never family text
-    return c.json({ error: e.userMessage }, e.status as 400);
+    return c.json({ error: e.userMessage, ...(e.code ? { code: e.code, detail: e.message } : {}) }, e.status as 400);
   }
   console.log(JSON.stringify({ route: "error", kind: (e as Error)?.name ?? "unknown" })); // never the message: it could hold a name
   return c.json({ error: TANGLED }, 500);

@@ -18,6 +18,7 @@ export function Interview() {
   const [resetKey, setResetKey] = useState(0);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+  const [why, setWhy] = useState("");
   const [left, setLeft] = useState<{ left: number; limit: number } | null>(null);
   useEffect(() => { getConfig().then((c) => setLeft({ left: c.booksLeft, limit: c.bookLimit })).catch(() => undefined); }, []);
   const kid = blocks.name.trim() || "your kid";
@@ -25,7 +26,7 @@ export function Interview() {
   useEffect(() => {
     if (!blocks.name.trim()) { navigate("/blocks"); return; }
     let live = true;
-    interview(blocks).then((r) => live && setQs(r.questions)).catch(() => live && setSkipped(true)); // the interview is optional
+    interview(blocks).then((r) => live && setQs(r.questions)).catch((e) => { if (!live) return; setSkipped(true); if (e instanceof ApiError && e.code) setWhy(e.message); }); // the interview is optional
     return () => { live = false; };
   }, [blocks]);
 
@@ -65,7 +66,7 @@ export function Interview() {
         <Squiggle seed="iv" width={260} />
 
         {!qs && !skipped && <p className="margin-note" role="status">The Delivery Man is checking his clipboard…</p>}
-        {skipped && <p className="margin-note">The Delivery Man dropped his clipboard, so we'll skip the questions this time.</p>}
+        {skipped && <p className="margin-note">The Delivery Man dropped his clipboard, so we'll skip the questions this time.{why && <> <span className="soft">{why.replace(/^[^(]*/, "")}</span></>}</p>}
 
         {(qs ?? []).map((q) => {
           const p = picks[q.id] ?? { chosen: [], text: "" };

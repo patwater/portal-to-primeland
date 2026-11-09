@@ -13,7 +13,7 @@ export async function generateStory(env: StoryEnv, blocks: FamilyBlocks, answers
   let user = base;
   let lastErrors: string[] = [];
   for (let attempt = 0; attempt < 2; attempt++) {
-    const raw = await callClaude({ env, route: attempt ? "story-retry" : "story", model: env.MODEL_STORY ?? "claude-sonnet-5-5", system, user, schema: storyJsonSchema, maxTokens: 8000, timeoutMs: 120_000, fetchImpl });
+    const raw = await callClaude({ env, route: attempt ? "story-retry" : "story", model: env.MODEL_STORY ?? "claude-sonnet-5-5", system, user, schema: storyJsonSchema, maxTokens: 16000, effort: "medium", timeoutMs: 170_000, fetchImpl });
     const parsed = storySchema.safeParse(raw);
     lastErrors = parsed.success ? checkStory(parsed.data, blocks) : parsed.error.issues.slice(0, 6).map((i) => `${i.path.join(".")}: ${i.message}`);
     if (parsed.success && !lastErrors.length) return parsed.data;

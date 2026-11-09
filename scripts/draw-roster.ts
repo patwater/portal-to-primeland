@@ -39,13 +39,13 @@ async function call(user: string): Promise<unknown> {
     headers: { "x-api-key": key!, "anthropic-version": "2023-06-01", "content-type": "application/json" },
     body: JSON.stringify({
       model,
-      max_tokens: 8000,
+      max_tokens: 12000,
       system: [
         { type: "text", text: `<soul>\n${soul}\n</soul>`, cache_control: { type: "ephemeral" } },
         { type: "text", text: `<task>\n${TASK}\n</task>` },
       ],
       messages: [{ role: "user", content: user }],
-      output_config: { format: { type: "json_schema", schema: drawingJsonSchema } },
+      output_config: { effort: "low", format: { type: "json_schema", schema: drawingJsonSchema } },
     }),
     signal: AbortSignal.timeout(120_000),
   });

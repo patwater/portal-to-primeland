@@ -44,7 +44,7 @@ async function drawWith(env: ArtEnv, route: string, user: string, check: Check, 
   let msg = user;
   let last: string[] = [];
   for (let attempt = 0; attempt < 2; attempt++) {
-    const raw = await callClaude({ env, route: attempt ? `${route}-retry` : route, model: env.MODEL_ART ?? "claude-sonnet-5-5", system, user: msg, schema: drawingJsonSchema, maxTokens: 8000, timeoutMs: 90_000, fetchImpl });
+    const raw = await callClaude({ env, route: attempt ? `${route}-retry` : route, model: env.MODEL_ART ?? "claude-sonnet-5-5", system, user: msg, schema: drawingJsonSchema, maxTokens: 12000, effort: "low", timeoutMs: 120_000, fetchImpl });
     const v = validateDrawing(raw, { bounds: check.bounds, allowSprites: check.allowSprites, spriteIds: check.spriteIds });
     if (v.ok) {
       const placed = new Set(v.drawing.elements.flatMap((e) => (e.type === "sprite" ? [e.spriteId] : [])));

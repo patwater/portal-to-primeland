@@ -11,7 +11,7 @@ export async function generateInterview(env: InterviewEnv, blocks: FamilyBlocks,
   const base = interviewerUser(blocks);
   let user = base;
   for (let attempt = 0; attempt < 2; attempt++) {
-    const raw = await callClaude({ env, route: "interview", model: env.MODEL_INTERVIEW ?? "claude-haiku-5-5", system, user, schema: interviewJsonSchema, maxTokens: 1500, timeoutMs: 40_000, fetchImpl });
+    const raw = await callClaude({ env, route: "interview", model: env.MODEL_INTERVIEW ?? "claude-haiku-5-5", system, user, schema: interviewJsonSchema, maxTokens: 6000, effort: "low", timeoutMs: 60_000, fetchImpl });
     const parsed = interviewSchema.safeParse(raw);
     const errors = parsed.success ? checkInterview(parsed.data) : parsed.error.issues.slice(0, 5).map((i) => `${i.path.join(".")}: ${i.message}`);
     if (parsed.success && !errors.length) return parsed.data;

@@ -42,7 +42,7 @@ export async function generateRevision(env: StoryEnv, book: StoredBook, blocks: 
     `<limits>\nLocked pages (never change, never remove): ${lockedIds.join(", ") || "none"}. Insert or remove at most 2 pages in total. Book length stays between ${Math.max(6, book.pages.length - 2)} and ${Math.min(14, book.pages.length + 2)} pages. Give inserted pages new ids that are not already used.\n</limits>`].join("\n\n");
   let user = base, errors: string[] = [];
   for (let attempt = 0; attempt < 2; attempt++) {
-    const raw = await callClaude({ env, route: attempt ? "revise-retry" : "revise", model: env.MODEL_STORY ?? "claude-sonnet-5-5", system, user, schema: revisionJsonSchema, maxTokens: 8000, timeoutMs: 120_000, fetchImpl });
+    const raw = await callClaude({ env, route: attempt ? "revise-retry" : "revise", model: env.MODEL_STORY ?? "claude-sonnet-5-5", system, user, schema: revisionJsonSchema, maxTokens: 16000, effort: "medium", timeoutMs: 170_000, fetchImpl });
     const rev = revisionSchema.safeParse(raw);
     if (!rev.success) errors = rev.error.issues.slice(0, 5).map((i) => `${i.path.join(".")}: ${i.message}`);
     else {
