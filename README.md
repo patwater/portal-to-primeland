@@ -36,6 +36,10 @@ Verify binding syntax in `wrangler.jsonc` against current Cloudflare docs before
 - **"The doorman wasn't sure you were a grown-up."** Cloudflare rejected the Turnstile token. The usual cause is a site key and secret key from different widgets. Cloudflare's dummy site key (`1x00000000000000000000AA`, the widget that says "For testing only") only works with the dummy secret `1x0000000000000000000000000000000AA`; a real widget's site key needs that widget's real secret. The response carries Cloudflare's error code, and the Worker logs it (Workers Observability is on in `wrangler.jsonc`).
 - **"The Delivery Man dropped his clipboard."** The interview call failed. Check the Worker logs for a `"route":"error"` line: `ANTHROPIC_API_KEY is not set` or an `upstream status` number says why.
 
+## Limits on new books
+
+Each anonymous browser session may make **two** new books (`SESSION_BOOK_LIMIT`). A session is a cookie (`portal_sid`, HttpOnly) that lasts `SESSION_TTL_HOURS` (24) from the first book; there are no accounts. A book that fails is not charged, and reading, drawing and revising existing books doesn't count. Because anyone can clear a cookie, each IP address is also held to `IP_DAILY_BOOK_LIMIT` (6) books a day, stored only as a hash. The global `DAILY_BOOK_BUDGET` and the per-minute rate limit still apply. The interview page tells visitors how many books they have left. To test beyond two books, raise `SESSION_BOOK_LIMIT` in `wrangler.jsonc` or clear the cookie.
+
 ## Turning Turnstile off
 
 `wrangler.jsonc` sets `TURNSTILE_ENABLED` to `"false"`: the server skips the Turnstile check and the page hides the widget. The per-IP rate limit and the daily book budget (`DAILY_BOOK_BUDGET`) still apply. To turn it back on, set it to `"true"` (or remove the line) and make sure the site key and secret key come from the same widget.

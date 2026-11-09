@@ -25,7 +25,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 const json = (body: unknown): RequestInit => ({ method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
 
-export const getConfig = () => request<{ turnstileSiteKey: string; turnstileEnabled: boolean }>("/api/config");
+export const getConfig = () => request<{ turnstileSiteKey: string; turnstileEnabled: boolean; bookLimit: number; booksLeft: number }>("/api/config");
 export const interview = (blocks: Blocks) => request<{ questions: Question[] }>("/api/interview", json({ blocks }));
 export const createBook = (blocks: Blocks, answers: Answer[], turnstileToken: string) =>
   request<{ id: string; editToken: string; book: Book }>("/api/books", json({ blocks, answers, turnstileToken }));

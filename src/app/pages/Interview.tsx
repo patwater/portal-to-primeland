@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { LoadingScene } from "../components/LoadingScene";
 import { RoughBox, RoughButton, RoughCheck, Squiggle } from "../components/Rough";
 import { Turnstile } from "../components/Turnstile";
-import { ApiError, createBook, interview, rememberBook, type Answer, type Question } from "../lib/api";
+import { ApiError, createBook, getConfig, interview, rememberBook, type Answer, type Question } from "../lib/api";
 import { defaultBlocks, type Blocks } from "../lib/blocks";
 import { navigate, Link } from "../lib/router";
 import { load } from "../lib/storage";
@@ -18,6 +18,8 @@ export function Interview() {
   const [resetKey, setResetKey] = useState(0);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+  const [left, setLeft] = useState<{ left: number; limit: number } | null>(null);
+  useEffect(() => { getConfig().then((c) => setLeft({ left: c.booksLeft, limit: c.bookLimit })).catch(() => undefined); }, []);
   const kid = blocks.name.trim() || "your kid";
 
   useEffect(() => {
@@ -45,6 +47,7 @@ export function Interview() {
     } catch (e) {
       setErr(e instanceof ApiError ? e.message : "The scissors got tangled. Shall we try that again?");
       setBusy(false); setToken(null); setResetKey((k) => k + 1);
+      getConfig().then((c) => setLeft({ left: c.booksLeft, limit: c.bookLimit })).catch(() => undefined);
     }
   };
 
@@ -87,8 +90,9 @@ export function Interview() {
         })}
 
         <div className="form-foot">
+          {left && <p className="margin-note" role="status">{left.left > 0 ? `${left.left} of ${left.limit} books left for this visit.` : `You've opened all ${left.limit} of your books for this visit. They're still on your shelf, and more boxes arrive tomorrow.`}</p>}
           <Turnstile onToken={setToken} resetKey={resetKey} />
-          <RoughButton big seed="open" className="wobble" disabled={!token || (!qs && !skipped)} onClick={open}>Open the portal →</RoughButton>
+          <RoughButton big seed="open" className="wobble" disabled={!token || (!qs && !skipped) || left?.left === 0} onClick={open}>Open the portal →</RoughButton>
           {err && <p className="notice" role="alert">{err}</p>}
           <p><Link to="/blocks">← Back to the blocks</Link>{qs && <> · <button className="linkish" onClick={() => { setQs(null); setSkipped(true); }}>Skip the questions</button></>}</p>
         </div>

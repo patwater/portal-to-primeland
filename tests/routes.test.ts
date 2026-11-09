@@ -188,6 +188,6 @@ describe("misc routes", () => {
   });
   it("exposes only the public Turnstile site key", async () => {
     const res = await app.fetch(new Request("http://x/api/config"), mkEnv({ TURNSTILE_SITE_KEY: "pub" }));
-    expect(await res.json()).toEqual({ turnstileSiteKey: "pub", turnstileEnabled: true });
+    expect(await res.json()).toEqual({ turnstileSiteKey: "pub", turnstileEnabled: true, bookLimit: 2, booksLeft: 2 });
   });
 });

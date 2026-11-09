@@ -10,8 +10,9 @@ import { hasRequests, lockedPageIds, cleanText, type Feedback } from "../shared/
 import { feedbackSchema } from "../shared/feedback-schema";
 import { drawCastSheet, drawPage, type ArtEnv } from "./prompts/sketch";
 import { allowedSpriteIds } from "./sprites";
+import { booksLeft, limitMessage, newSession, readSession, reserveBook, sessionCookie, sessionLimit, type LimitEnv } from "./limits";
 
-export type Bindings = InterviewEnv & StoryEnv & ArtEnv & StorageEnv & {
+export type Bindings = InterviewEnv & StoryEnv & ArtEnv & StorageEnv & LimitEnv & {
   STUDIO_PASSWORD?: string; TURNSTILE_SECRET_KEY?: string; TURNSTILE_SITE_KEY?: string; TURNSTILE_VERIFY_URL?: string; TURNSTILE_ENABLED?: string;
   GEN_LIMITER?: { limit(o: { key: string }): Promise<{ success: boolean }> };
 };
@@ -37,7 +38,9 @@ app.get("/api/health", (c) =>
 );
 /** The check is on unless TURNSTILE_ENABLED is exactly "false". The rate limit and the daily book budget apply either way. */
 const turnstileOn = (env: Bindings) => env.TURNSTILE_ENABLED !== "false";
-app.get("/api/config", (c) => c.json({ turnstileSiteKey: c.env.TURNSTILE_SITE_KEY ?? "", turnstileEnabled: turnstileOn(c.env) }));
+app.get("/api/config", async (c) =>
+  c.json({ turnstileSiteKey: c.env.TURNSTILE_SITE_KEY ?? "", turnstileEnabled: turnstileOn(c.env), bookLimit: sessionLimit(c.env), booksLeft: await booksLeft(c.env, readSession(c.req.header("cookie"))) }),
+);
 
 /** Constant-time string comparison so the studio password can't be guessed by timing. */
 function same(a: string, b: string): boolean {
@@ -119,19 +122,26 @@ app.post("/api/books", async (c) => {
     if (!blocks.success || !answers.success) return c.json({ error: "The Delivery Man needs at least a name for the label." }, 400);
     const ts = await turnstileCheck(c.env, body?.turnstileToken, ip(c));
     if (!ts.ok) return turnstileFail(c, ts);
-    if (!(await takeBudget(c.env))) return c.json({ error: "The Delivery Man has run out of boxes for today. Please come back tomorrow." }, 429);
 
-    const story = await generateStory(c.env, blocks.data, answers.data);
-    const id = randomId(16), editToken = randomToken();
-    const book: StoredBook = {
-      id, status: "drawing", version: 1, soulVersion: { commit: version.commit, soul: version.soul }, createdAt: new Date().toISOString(),
-      kidName: blocks.data.name, paper: blocks.data.paper,
-      title: blocks.data.title || story.title, dedication: blocks.data.dedication || story.dedication, byline: blocks.data.byline || story.byline,
-      n2Resolution: story.n2Resolution, cast: story.cast, pages: story.pages,
-    };
-    await saveBook(c.env, book, await sha256(editToken));
-    await saveBlocks(c.env, id, blocks.data); // private: lets the Reviser honor avoid notes later; never served
-    return c.json({ id, editToken, book });
+    // Two books per session (an anonymous browser, by cookie) plus a daily cap per IP address. A book that fails is not charged.
+    const sid = readSession(c.req.header("cookie")) ?? newSession();
+    const slot = await reserveBook(c.env, sid, ip(c));
+    if (!slot.ok) return c.json({ error: limitMessage(c.env, slot.reason), code: slot.reason === "session" ? "session_limit" : "ip_limit" }, 429);
+    try {
+      if (!(await takeBudget(c.env))) { await slot.release(); return c.json({ error: "The Delivery Man has run out of boxes for today. Please come back tomorrow." }, 429); }
+      const story = await generateStory(c.env, blocks.data, answers.data);
+      const id = randomId(16), editToken = randomToken();
+      const book: StoredBook = {
+        id, status: "drawing", version: 1, soulVersion: { commit: version.commit, soul: version.soul }, createdAt: new Date().toISOString(),
+        kidName: blocks.data.name, paper: blocks.data.paper,
+        title: blocks.data.title || story.title, dedication: blocks.data.dedication || story.dedication, byline: blocks.data.byline || story.byline,
+        n2Resolution: story.n2Resolution, cast: story.cast, pages: story.pages,
+      };
+      await saveBook(c.env, book, await sha256(editToken));
+      await saveBlocks(c.env, id, blocks.data); // private: lets the Reviser honor avoid notes later; never served
+      c.header("Set-Cookie", sessionCookie(sid, c.env, new URL(c.req.url).protocol === "https:"));
+      return c.json({ id, editToken, book });
+    } catch (e) { await slot.release(); throw e; }
   } catch (e) { return friendly(c, e); }
 });
 

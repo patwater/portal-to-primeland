@@ -15,6 +15,10 @@
     "MODEL_ART": "claude-sonnet-5-5",
     "MODEL_INTERVIEW": "claude-haiku-5-5",
     "DAILY_BOOK_BUDGET": "200",
+    // New books per anonymous browser session (a cookie), how long a session lasts, and a daily cap per IP address.
+    "SESSION_BOOK_LIMIT": "2",
+    "SESSION_TTL_HOURS": "24",
+    "IP_DAILY_BOOK_LIMIT": "6",
     // "false" turns the Turnstile check off (the rate limit and daily budget still apply). Remove the line or set "true" to turn it back on.
     "TURNSTILE_ENABLED": "false",
     "TURNSTILE_SITE_KEY": "42",
