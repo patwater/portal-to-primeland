@@ -13,7 +13,8 @@
     "sprites": "python3 scripts/extract-sprites.py",
     "draw-roster": "tsx scripts/draw-roster.ts",
     "test:live": "vitest run tests/live.test.ts",
-    "hand-sheets": "tsx scripts/hand-sheets.ts"
+    "hand-sheets": "tsx scripts/hand-sheets.ts",
+    "postinstall": "node scripts/ci-build.mjs"
   },
   "dependencies": {
     "hono": "^4.13.17",
