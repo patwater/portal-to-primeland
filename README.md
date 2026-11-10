@@ -31,6 +31,10 @@ STUDIO_PASSWORD=choose-something
 
 Verify binding syntax in `wrangler.jsonc` against current Cloudflare docs before the first deploy.
 
+## Keys that disappear after a deploy
+
+A deploy replaces the Worker's settings with `wrangler.jsonc`, which deletes plain **Text** variables that were only ever added in the dashboard. Add keys (`ANTHROPIC_API_KEY`, `STUDIO_PASSWORD`, `TURNSTILE_SECRET_KEY`) as type **Secret** in the Worker's Variables and Secrets, or with `npx wrangler secret put <NAME>`: secrets survive every deploy. `keep_vars` is also on in `wrangler.jsonc` as a safety net. The "Build" section of the settings (build variables) is a different list and is not available to the running Worker.
+
 ## Troubleshooting
 
 - **"The doorman wasn't sure you were a grown-up."** Cloudflare rejected the Turnstile token. The usual cause is a site key and secret key from different widgets. Cloudflare's dummy site key (`1x00000000000000000000AA`, the widget that says "For testing only") only works with the dummy secret `1x0000000000000000000000000000000AA`; a real widget's site key needs that widget's real secret. The response carries Cloudflare's error code, and the Worker logs it (Workers Observability is on in `wrangler.jsonc`).

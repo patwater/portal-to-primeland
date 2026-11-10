@@ -9,6 +9,8 @@
   // Custom domain: uncomment and use a domain on your Cloudflare account, then `npm run deploy`.
   // "routes": [{ "pattern": "primeland.example.com", "custom_domain": true }],
   // Makes the Worker's console.log lines (cache counts, error reasons; never family details) visible in the dashboard.
+  // Keep variables and secrets that were added in the dashboard instead of deleting any that are not listed in this file on each deploy.
+  "keep_vars": true,
   "observability": { "enabled": true },
   "vars": {
     "MODEL_STORY": "claude-sonnet-5-5",
